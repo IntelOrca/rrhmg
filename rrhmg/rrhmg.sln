@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntelOrca.RRHMG.Prototype", "IntelOrca.RRHMG.Prototype\IntelOrca.RRHMG.Prototype.csproj", "{A1B20CD1-32D3-4872-813C-7A6B502343C9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntelOrca.RRHMG", "IntelOrca.RRHMG\IntelOrca.RRHMG.csproj", "{1FFAF6E1-6FBB-4F1B-9188-F0B27D03FCD3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{A1B20CD1-32D3-4872-813C-7A6B502343C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1B20CD1-32D3-4872-813C-7A6B502343C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1B20CD1-32D3-4872-813C-7A6B502343C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FFAF6E1-6FBB-4F1B-9188-F0B27D03FCD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FFAF6E1-6FBB-4F1B-9188-F0B27D03FCD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FFAF6E1-6FBB-4F1B-9188-F0B27D03FCD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FFAF6E1-6FBB-4F1B-9188-F0B27D03FCD3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
