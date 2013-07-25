@@ -1,16 +1,30 @@
-﻿using System;
+﻿#region RRHMG, © Copyright Ted John 2013
+// Recursive random hexagon map generator
+// Intelorca.RRHMG
+// 
+// Universiy of Manchester, Computer Science
+// Third year project
+//
+// Application to generate random hexagonal maps of terrain where the map can recurse indefinitely
+// in the same manner as a fractal.
+// 
+// © Copyright Ted John 2013
+#endregion
+
+using System;
 
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Audio;
-using OpenTK.Audio.OpenAL;
 using OpenTK.Input;
 
 namespace IntelOrca.RRHMG
 {
     class Program : OpenTK.GameWindow
     {
+        private World _world;
+        private Viewport _viewport;
+
         static void Main(string[] args)
         {
             // The 'using' idiom guarantees proper resource cleanup.
@@ -22,9 +36,12 @@ namespace IntelOrca.RRHMG
 
         /// <summary>Creates a 800x600 window with the specified title.</summary>
         public Program()
-            : base(800, 600, GraphicsMode.Default, "RRHMG")
+            : base(800, 600, new GraphicsMode(32, 24, 0, 0), "RRHMG")
         {
             VSync = VSyncMode.On;
+
+            _world = new World(HexagonShape.FlatTop);
+            _viewport = new Viewport();
         }
 
         /// <summary>Load resources here.</summary>
@@ -73,17 +90,13 @@ namespace IntelOrca.RRHMG
         {
             base.OnRenderFrame(e);
 
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
 
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.MatrixMode(MatrixMode.Modelview);
 
-            GL.Begin(BeginMode.Triangles);
-
-            GL.Color3(1.0f, 1.0f, 0.0f); GL.Vertex3(50.0f, 400.0f, 0.0f);
-            GL.Color3(1.0f, 0.0f, 0.0f); GL.Vertex3(400.0f, 400.0f, 0.0f);
-            GL.Color3(0.2f, 0.9f, 1.0f); GL.Vertex3(200.0f, 50.0f, 0.0f);
-
-            GL.End();
+            _world.Render(_viewport);
 
             SwapBuffers();
         }
