@@ -5,20 +5,64 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntelOrca.RRHMG.Prototype",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntelOrca.RRHMG", "IntelOrca.RRHMG\IntelOrca.RRHMG.csproj", "{1FFAF6E1-6FBB-4F1B-9188-F0B27D03FCD3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntelOrca.RRHMG.Metro", "IntelOrca.RRHMG.Metro\IntelOrca.RRHMG.Metro.csproj", "{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM = Debug|ARM
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|ARM = Release|ARM
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{A1B20CD1-32D3-4872-813C-7A6B502343C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A1B20CD1-32D3-4872-813C-7A6B502343C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B20CD1-32D3-4872-813C-7A6B502343C9}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{A1B20CD1-32D3-4872-813C-7A6B502343C9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A1B20CD1-32D3-4872-813C-7A6B502343C9}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{A1B20CD1-32D3-4872-813C-7A6B502343C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1B20CD1-32D3-4872-813C-7A6B502343C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1B20CD1-32D3-4872-813C-7A6B502343C9}.Release|ARM.ActiveCfg = Release|Any CPU
+		{A1B20CD1-32D3-4872-813C-7A6B502343C9}.Release|x64.ActiveCfg = Release|Any CPU
+		{A1B20CD1-32D3-4872-813C-7A6B502343C9}.Release|x86.ActiveCfg = Release|Any CPU
 		{1FFAF6E1-6FBB-4F1B-9188-F0B27D03FCD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1FFAF6E1-6FBB-4F1B-9188-F0B27D03FCD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FFAF6E1-6FBB-4F1B-9188-F0B27D03FCD3}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{1FFAF6E1-6FBB-4F1B-9188-F0B27D03FCD3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1FFAF6E1-6FBB-4F1B-9188-F0B27D03FCD3}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{1FFAF6E1-6FBB-4F1B-9188-F0B27D03FCD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1FFAF6E1-6FBB-4F1B-9188-F0B27D03FCD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FFAF6E1-6FBB-4F1B-9188-F0B27D03FCD3}.Release|ARM.ActiveCfg = Release|Any CPU
+		{1FFAF6E1-6FBB-4F1B-9188-F0B27D03FCD3}.Release|x64.ActiveCfg = Release|Any CPU
+		{1FFAF6E1-6FBB-4F1B-9188-F0B27D03FCD3}.Release|x86.ActiveCfg = Release|Any CPU
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Debug|ARM.ActiveCfg = Debug|ARM
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Debug|ARM.Build.0 = Debug|ARM
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Debug|ARM.Deploy.0 = Debug|ARM
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Debug|x64.ActiveCfg = Debug|x64
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Debug|x64.Build.0 = Debug|x64
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Debug|x64.Deploy.0 = Debug|x64
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Debug|x86.ActiveCfg = Debug|x86
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Debug|x86.Build.0 = Debug|x86
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Debug|x86.Deploy.0 = Debug|x86
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Release|ARM.ActiveCfg = Release|ARM
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Release|ARM.Build.0 = Release|ARM
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Release|ARM.Deploy.0 = Release|ARM
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Release|x64.ActiveCfg = Release|x64
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Release|x64.Build.0 = Release|x64
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Release|x64.Deploy.0 = Release|x64
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Release|x86.ActiveCfg = Release|x86
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Release|x86.Build.0 = Release|x86
+		{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
