@@ -5,14 +5,11 @@
     xmlns:local="using:IntelOrca.RRHMG.Metro"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:my="clr-namespace:IntelOrca.RRHMG.Metro"
     mc:Ignorable="d">
 
     <Canvas Background="#CCCCCC">
         <TextBlock Foreground="Black" FontSize="42" Text="Recursive random hexagonal map generator" FontFamily="Segoe UI" />
-        <Polygon
-            Canvas.Left="140" Canvas.Top="100"
-            Fill="Red"
-            Points="0,110.9,32,55.4,96,55.4,128,110.9,96,166.3,32,166.3">
-        </Polygon>
+        <local:HexagonShape Canvas.Left="128" Canvas.Top="128" Size="64" Foreground="Red" />
     </Canvas>
 </Page>
