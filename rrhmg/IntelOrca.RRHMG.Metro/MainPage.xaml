@@ -5,11 +5,13 @@
     xmlns:local="using:IntelOrca.RRHMG.Metro"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:my="clr-namespace:IntelOrca.RRHMG.Metro"
     mc:Ignorable="d">
 
     <Canvas Background="#CCCCCC">
         <TextBlock Foreground="Black" FontSize="42" Text="Recursive random hexagonal map generator" FontFamily="Segoe UI" />
-        <local:HexagonShape Canvas.Left="128" Canvas.Top="128" Size="64" Foreground="Red" />
+        <local:HexagonShape Canvas.Left="256" Canvas.Top="129" Size="64" Foreground="Blue" />
+        <local:HexagonShape Canvas.Left="354" Canvas.Top="186" Size="64" Foreground="Red" />
+        <local:HexagonShape Canvas.Left="159" Canvas.Top="186" Size="64" Foreground="Green" />
+        <local:HexagonShape Canvas.Left="256" Canvas.Top="242" Size="64" Foreground="Yellow" />
     </Canvas>
 </Page>
