@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Linq;
 using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 
@@ -10,9 +13,12 @@ namespace IntelOrca.RRHMG.Metro
 	/// <summary>
 	/// Represents a XAML Hexagon shape control.
 	/// </summary>
-	public sealed class HexagonShape : UserControl
+	public sealed class HexagonShape : ContentControl
 	{
+		private readonly Hexagon _hexagon;
 		private readonly Polygon _polygon;
+
+		public Hexagon Hexagon { get { return _hexagon; } }
 
 		#region Properties
 
@@ -36,14 +42,13 @@ namespace IntelOrca.RRHMG.Metro
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HexagonShape" /> class.
 		/// </summary>
-		public HexagonShape()
+		public HexagonShape(Hexagon hexagon, double size)
 		{
+			_hexagon = hexagon;
 			Content = _polygon = new Polygon();
-			
-			this.Loaded += (s, e) => UpdateContent();
+			Size = size;
 
-			this.AddPropertyChangedHandler<Brush>("BorderBrush", UpdateContent);
-			this.AddPropertyChangedHandler<Brush>("Foreground", UpdateContent);
+			UpdateContent();
 		}
 
 		/// <summary>
@@ -51,30 +56,38 @@ namespace IntelOrca.RRHMG.Metro
 		/// </summary>
 		private void UpdateContent()
 		{
-			// TODO Move this logic and data to Hexagon core classes.
-			double hexagonWidth = Size * 2.0;
-			double hexagonHeight = Math.Sqrt(3) / 2.0 * hexagonWidth;
-			var offsets = new Point[] {
-				new Point(-0.5 + 0.5, 0 + 0.5),
-				new Point(-0.25 + 0.5, -0.5 + 0.5),
-				new Point(0.25 + 0.5, -0.5 + 0.5),
-				new Point(0.5 + 0.5, 0 + 0.5),
-				new Point(0.25 + 0.5, 0.5 + 0.5),
-				new Point(-0.25 + 0.5, 0.5 + 0.5),
-			};
+			double hexagonWidth = Hexagon.GetWidth(Size);
+			double hexagonHeight = Hexagon.GetHeight(Size);
 
 			// Set the polygon points
 			_polygon.Points.Clear();
-			foreach (Point p in offsets)
-				_polygon.Points.Add(new Point(p.X * hexagonWidth, p.Y * hexagonHeight));
+			foreach (Point offset in Hexagon.PointSizeOffsets.Select(p => new Point(p.X + 0.5, p.Y + 0.5)))
+				_polygon.Points.Add(new Point(offset.X * hexagonWidth, offset.Y * hexagonHeight));
 
 			// Set the appearance
-			_polygon.Fill = Foreground;
-			_polygon.Stroke = BorderBrush;
+			_polygon.Fill = new SolidColorBrush(_hexagon.Colour);
 
 			// Set the final control size
 			Width = hexagonWidth;
 			Height = hexagonHeight;
+		}
+
+		protected override void OnPointerEntered(PointerRoutedEventArgs e)
+		{
+			base.OnPointerEntered(e);
+
+			Color c = _hexagon.Colour;
+			c.R = (byte)Math.Min(255, c.R + 128);
+			c.G = (byte)Math.Min(255, c.G + 128);
+			c.B = (byte)Math.Min(255, c.B + 128);
+			_polygon.Fill = new SolidColorBrush(c);
+		}
+
+		protected override void OnPointerExited(PointerRoutedEventArgs e)
+		{
+			base.OnPointerExited(e);
+
+			_polygon.Fill = new SolidColorBrush(_hexagon.Colour);
 		}
 	}
 }

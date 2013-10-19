@@ -8,14 +8,9 @@
     mc:Ignorable="d">
 
     <Grid Background="#CCCCCC">
-        <Canvas x:Name="XamlCanvas">
-            <local:HexagonShape Canvas.Left="256" Canvas.Top="129" Size="64" Foreground="Blue" />
-            <local:HexagonShape Canvas.Left="354" Canvas.Top="186" Size="64" Foreground="Red" />
-            <local:HexagonShape Canvas.Left="159" Canvas.Top="186" Size="64" Foreground="Green" />
-            <local:HexagonShape Canvas.Left="256" Canvas.Top="242" Size="64" Foreground="Yellow" />
-        </Canvas>
-        <Grid>
+        <Canvas x:Name="XamlCanvas" />
+        <Grid x:Name="XamlOverlayGrid" Visibility="Collapsed">
             <TextBlock x:Name="ttt" Foreground="Black" FontSize="42" Text="Recursive random hexagonal map generator" FontFamily="Segoe UI" />
         </Grid>
-    </Grid>    
+    </Grid>
 </Page>

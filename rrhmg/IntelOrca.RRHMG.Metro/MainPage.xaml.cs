@@ -23,19 +23,34 @@ namespace IntelOrca.RRHMG.Metro
     /// </summary>
     internal sealed partial class MainPage : Page
     {
-		private int _levels = 0;
+		private int _levels = 3;
 		private Point _translate;
 		private Point _lastPosition;
 
 		private uint? _movePointer;
 
+		private Hexagon _headHexagon = new Hexagon(Colors.Blue);
+		private Hexagon _showingHexagon;
+
         public MainPage()
         {
+			_headHexagon.Children = new[] {
+				new Hexagon(_headHexagon, Colors.Blue),
+				new Hexagon(_headHexagon, Colors.Blue),
+				new Hexagon(_headHexagon, Colors.Red),
+				new Hexagon(_headHexagon, Colors.Red),
+				new Hexagon(_headHexagon, Colors.Blue),
+				new Hexagon(_headHexagon, Colors.Yellow),
+				new Hexagon(_headHexagon, Colors.Yellow),
+			};
+			_showingHexagon = _headHexagon;
+
             this.InitializeComponent();
 
 			this.Loaded += (s, e) => GenerateHexagons();
         }
 
+		/*
 		protected override void OnPointerPressed(PointerRoutedEventArgs e)
 		{
 			base.OnPointerPressed(e);
@@ -74,27 +89,10 @@ namespace IntelOrca.RRHMG.Metro
 			ttt.Text = String.Format("{0:000.0}, {1:000.0}", currentPosition.X, currentPosition.Y);
 			_lastPosition = currentPosition;			
 		}
-
-		protected override void OnTapped(TappedRoutedEventArgs e)
-		{
-			base.OnTapped(e);
-
-			_levels--;
-			GenerateHexagons();
-		}
-
-		protected override void OnRightTapped(RightTappedRoutedEventArgs e)
-		{
-			base.OnRightTapped(e);
-
-			_levels++;
-			GenerateHexagons();
-		}
+		*/
 
 		private void GenerateHexagons()
 		{
-			_rand = new Random(0);
-
 			XamlCanvas.RenderTransform = new TranslateTransform() { X = _translate.X, Y = _translate.Y };
 
 			double cx = XamlCanvas.ActualWidth / 2.0;
@@ -102,17 +100,16 @@ namespace IntelOrca.RRHMG.Metro
 			double size = Math.Min(XamlCanvas.ActualWidth, XamlCanvas.ActualHeight) / 2.0;
 
 			XamlCanvas.Children.Clear();
-			// XamlCanvas.Children.Add(GenerateHexagon(size, new Point(cx, cy), 0).First());
-			foreach (HexagonShape hex in GenerateHexagon(size, new Point(cx, cy), _levels))
+			foreach (HexagonShape hex in GenerateHexagon(size, new Point(cx, cy), _levels, _showingHexagon))
 				XamlCanvas.Children.Add(hex);
 		}
 
-		private IEnumerable<HexagonShape> GenerateHexagon(double size, Point position, int levels)
+		private IEnumerable<HexagonShape> GenerateHexagon(double size, Point position, int levels, Hexagon hexagon)
 		{
 			if (levels < 0)
 				yield break;
 
-			IEnumerable<Point> offsets = new Point[] {
+			IReadOnlyList<Point> offsets = new Point[] {
 				new Point(-0.75, -0.5),
 				new Point(-0.75, +0.5),
 				new Point( 0.00, -1.0),
@@ -124,41 +121,67 @@ namespace IntelOrca.RRHMG.Metro
 
 			double nextSize = size / 3.0;
 
-			double hexWidth = size / 1.5;
-			double hexHeight = Math.Sqrt(3) / 2.0 * hexWidth;
-			offsets = offsets.Select(x => new Point(x.X * hexWidth, x.Y * hexHeight));
+			double hexWidth = Hexagon.GetWidth(nextSize);
+			double hexHeight = Hexagon.GetHeight(nextSize);
+			offsets = offsets.Select(x => new Point(x.X * hexWidth, x.Y * hexHeight)).ToArray();
 
-			if (levels == 0) {
-				yield return GenerateHexagon(size, position);
+			if (levels == 0 || hexagon.Children == null) {
+				yield return GenerateHexagon(size, position, hexagon);
 				yield break;
 			}
 
 			var hexagons = new List<HexagonShape>();
-			foreach (Point p in offsets)
-				hexagons.AddRange(GenerateHexagon(nextSize, new Point(position.X + p.X, position.Y + p.Y), levels - 1));
-
+			for (int i = 0; i < hexagon.Children.Length; i++) {
+				Point p = offsets[i];
+				hexagons.AddRange(GenerateHexagon(nextSize, new Point(position.X + p.X, position.Y + p.Y), levels - 1, hexagon.Children[i]));
+			}
+ 
 			foreach (HexagonShape hex in hexagons)
 				yield return hex;
 		}
 
 		private Random _rand = new Random();
 
-		private HexagonShape GenerateHexagon(double size, Point position)
+		private Color GetRandomColour()
 		{
-			Color randomColour = Color.FromArgb(
-				128,
-				(byte)Math.Min(255, _rand.Next(0, 4) * 64),
-				(byte)Math.Min(255, _rand.Next(0, 4) * 64),
-				(byte)Math.Min(255, _rand.Next(0, 4) * 64)
+			return Color.FromArgb(
+				255,
+				(byte)Math.Min(255, _rand.Next(0, 4) * 32),
+				(byte)Math.Min(255, _rand.Next(0, 4) * 32),
+				(byte)Math.Min(255, _rand.Next(0, 4) * 32)
 			);
+		}
 
-			var hex = new HexagonShape() {
-				Size = size,
-				Foreground = new SolidColorBrush(randomColour)
-			};
+		private HexagonShape GenerateHexagon(double size, Point position, Hexagon hexagon)
+		{
+			var hex = new HexagonShape(hexagon, size);
 
 			Canvas.SetLeft(hex, position.X - (hex.Width / 2.0));
 			Canvas.SetTop(hex, position.Y - (hex.Height / 2.0));
+
+			hex.Tapped += (s, e) => {
+				var shex = s as HexagonShape;
+				_showingHexagon = shex.Hexagon;
+
+				if (_showingHexagon.Children == null) {
+					_showingHexagon.Children =
+						Enumerable.Range(0, 7).
+						Select(x => new Hexagon(_showingHexagon, GetRandomColour())).
+						ToArray();
+				}
+
+				GenerateHexagons();
+			};
+
+			hex.IsRightTapEnabled = true;
+			hex.RightTapped += (s, e) => {
+				var shex = s as HexagonShape;
+				if (_showingHexagon.Parent != null) {
+					_showingHexagon = _showingHexagon.Parent;
+					GenerateHexagons();
+				}
+			};
+
 			return hex;
 		}
 
