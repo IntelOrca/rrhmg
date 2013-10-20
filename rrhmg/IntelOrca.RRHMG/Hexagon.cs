@@ -14,6 +14,16 @@ namespace IntelOrca.RRHMG
 		public Hexagon[] Children { get; set; }
 		public Color Colour { get; set; }
 
+		public IEnumerable<Hexagon> Siblings
+		{
+			get
+			{
+				if (Parent == null)
+					return Enumerable.Empty<Hexagon>();
+				return Parent.Children.Where(x => x != this);
+			}
+		}
+
 		public Hexagon(Color colour)
 		{
 			Colour = colour;

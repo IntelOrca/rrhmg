@@ -23,7 +23,7 @@ namespace IntelOrca.RRHMG.Metro
     /// </summary>
     internal sealed partial class MainPage : Page
     {
-		private int _levels = 3;
+		private int _maxLevelsToShow = 4;
 		private Point _translate;
 		private Point _lastPosition;
 
@@ -97,10 +97,10 @@ namespace IntelOrca.RRHMG.Metro
 
 			double cx = XamlCanvas.ActualWidth / 2.0;
 			double cy = XamlCanvas.ActualHeight / 2.0;
-			double size = Math.Min(XamlCanvas.ActualWidth, XamlCanvas.ActualHeight) / 2.0;
+			double size = Math.Max(XamlCanvas.ActualWidth, XamlCanvas.ActualHeight) * 0.75;
 
 			XamlCanvas.Children.Clear();
-			foreach (HexagonShape hex in GenerateHexagon(size, new Point(cx, cy), _levels, _showingHexagon))
+			foreach (HexagonShape hex in GenerateHexagon(size, new Point(cx, cy), _maxLevelsToShow, _showingHexagon))
 				XamlCanvas.Children.Add(hex);
 		}
 
@@ -161,13 +161,25 @@ namespace IntelOrca.RRHMG.Metro
 
 			hex.Tapped += (s, e) => {
 				var shex = s as HexagonShape;
-				_showingHexagon = shex.Hexagon;
+				// _showingHexagon = shex.Hexagon;
+				var tappedhex = shex.Hexagon;
 
-				if (_showingHexagon.Children == null) {
-					_showingHexagon.Children =
-						Enumerable.Range(0, 7).
-						Select(x => new Hexagon(_showingHexagon, GetRandomColour())).
-						ToArray();
+				int levelsDown = 1;
+				var currenthex = tappedhex;
+				while (currenthex.Parent != _showingHexagon) {
+					currenthex = currenthex.Parent;
+					levelsDown++;
+				}
+
+				if (levelsDown < _maxLevelsToShow) {
+					if (tappedhex.Children == null) {
+						tappedhex.Children =
+							Enumerable.Range(0, 7).
+							Select(x => new Hexagon(tappedhex, GetRandomColour())).
+							ToArray();
+					}
+				} else {
+					_showingHexagon = currenthex;
 				}
 
 				GenerateHexagons();
