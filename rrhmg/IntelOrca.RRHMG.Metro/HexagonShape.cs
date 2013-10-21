@@ -17,6 +17,7 @@ namespace IntelOrca.RRHMG.Metro
 	{
 		private readonly Hexagon _hexagon;
 		private readonly Polygon _polygon;
+		private Color _colour;
 
 		public Hexagon Hexagon { get { return _hexagon; } }
 
@@ -65,7 +66,8 @@ namespace IntelOrca.RRHMG.Metro
 				_polygon.Points.Add(new Point(offset.X * hexagonWidth, offset.Y * hexagonHeight));
 
 			// Set the appearance
-			_polygon.Fill = new SolidColorBrush(_hexagon.Colour);
+			_colour = TerrainRenderer.GetTerrainColour(_hexagon.TerrainInfo);
+			_polygon.Fill = new SolidColorBrush(_colour);
 
 			// Set the final control size
 			Width = hexagonWidth;
@@ -76,7 +78,7 @@ namespace IntelOrca.RRHMG.Metro
 		{
 			base.OnPointerEntered(e);
 
-			Color c = _hexagon.Colour;
+			Color c = _colour;
 			c.R = (byte)Math.Min(255, c.R + 128);
 			c.G = (byte)Math.Min(255, c.G + 128);
 			c.B = (byte)Math.Min(255, c.B + 128);
@@ -87,7 +89,7 @@ namespace IntelOrca.RRHMG.Metro
 		{
 			base.OnPointerExited(e);
 
-			_polygon.Fill = new SolidColorBrush(_hexagon.Colour);
+			_polygon.Fill = new SolidColorBrush(_colour);
 		}
 	}
 }

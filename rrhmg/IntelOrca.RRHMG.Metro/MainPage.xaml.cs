@@ -29,20 +29,11 @@ namespace IntelOrca.RRHMG.Metro
 
 		private uint? _movePointer;
 
-		private Hexagon _headHexagon = new Hexagon(Colors.Blue);
+		private Hexagon _headHexagon = new Hexagon(new TerrainInfo());
 		private Hexagon _showingHexagon;
 
         public MainPage()
         {
-			_headHexagon.Children = new[] {
-				new Hexagon(_headHexagon, Colors.Blue),
-				new Hexagon(_headHexagon, Colors.Blue),
-				new Hexagon(_headHexagon, Colors.Red),
-				new Hexagon(_headHexagon, Colors.Red),
-				new Hexagon(_headHexagon, Colors.Blue),
-				new Hexagon(_headHexagon, Colors.Yellow),
-				new Hexagon(_headHexagon, Colors.Yellow),
-			};
 			_showingHexagon = _headHexagon;
 
             this.InitializeComponent();
@@ -142,14 +133,11 @@ namespace IntelOrca.RRHMG.Metro
 
 		private Random _rand = new Random();
 
-		private Color GetRandomColour()
+		private TerrainInfo GetRandomTerrain()
 		{
-			return Color.FromArgb(
-				255,
-				(byte)Math.Min(255, _rand.Next(0, 4) * 32),
-				(byte)Math.Min(255, _rand.Next(0, 4) * 32),
-				(byte)Math.Min(255, _rand.Next(0, 4) * 32)
-			);
+			return new TerrainInfo() {
+				Height = _rand.NextDouble()
+			};
 		}
 
 		private HexagonShape GenerateHexagon(double size, Point position, Hexagon hexagon)
@@ -166,7 +154,7 @@ namespace IntelOrca.RRHMG.Metro
 
 				int levelsDown = 1;
 				var currenthex = tappedhex;
-				while (currenthex.Parent != _showingHexagon) {
+				while (currenthex.Parent != _showingHexagon && currenthex.Parent != null) {
 					currenthex = currenthex.Parent;
 					levelsDown++;
 				}
@@ -175,7 +163,7 @@ namespace IntelOrca.RRHMG.Metro
 					if (tappedhex.Children == null) {
 						tappedhex.Children =
 							Enumerable.Range(0, 7).
-							Select(x => new Hexagon(tappedhex, GetRandomColour())).
+							Select(x => new Hexagon(tappedhex, GetRandomTerrain())).
 							ToArray();
 					}
 				} else {
