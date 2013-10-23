@@ -58,12 +58,49 @@ namespace IntelOrca.RRHMG
 			TerrainInfo = terrainInfo;
 		}
 
+		/// <summary>
+		/// Generates child hexagons with terrain based on the terrain of this hexagon.
+		/// </summary>
+		/// <param name="random"></param>
+		public void GenerateChildren(Random random)
+		{
+			int numChildHexagonsToGenerate = ChildOffsets.Count;
+			int centralHexagonIndex = numChildHexagonsToGenerate / 2;
+
+			var children = new Hexagon[numChildHexagonsToGenerate];
+
+			// CHECK this is the same reference to parent terrain information
+			children[centralHexagonIndex] = new Hexagon(this, TerrainInfo);
+
+			// Generate the hexagons surrounding the central hexagon
+			for (int i = 0; i < numChildHexagonsToGenerate; i++)
+				if (i != centralHexagonIndex)
+					children[i] = new Hexagon(TerrainInfo.FromHexagon(this, random));
+
+			Children = children;
+		}
+
 		#region Static methods
 
 		/// <summary>
-		/// The point size offsets
+		/// The offsets in units of hexagon width / height for all child hexagons relative to the position of the parent
+		/// hexagon.
 		/// </summary>
-		public static Point[] PointSizeOffsets = new Point[] {
+		public static IReadOnlyList<Point> ChildOffsets = new Point[] {
+			new Point(-0.75, -0.5),
+			new Point(-0.75,  0.5),
+			new Point( 0.00, -1.0),
+			new Point( 0.00,  0.0),
+			new Point( 0.00,  1.0),
+			new Point( 0.75, -0.5),
+			new Point( 0.75,  0.5),
+		};
+
+		/// <summary>
+		/// The offsets of the hexagon polygon points in units of hexagon width / height relative to the position of the
+		/// hexagon.
+		/// </summary>
+		public static IReadOnlyList<Point> PointSizeOffsets = new Point[] {
 			new Point(-0.50,  0.0),
 			new Point(-0.25, -0.5),
 			new Point( 0.25, -0.5),

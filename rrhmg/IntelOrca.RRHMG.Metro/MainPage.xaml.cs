@@ -1,20 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI;
-using Windows.UI.Input;
-using Windows.UI.Xaml;
+using Windows.System;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace IntelOrca.RRHMG.Metro
 {
@@ -23,14 +13,19 @@ namespace IntelOrca.RRHMG.Metro
     /// </summary>
     internal sealed partial class MainPage : Page
     {
-		private int _maxLevelsToShow = 4;
-		private Point _translate;
-		private Point _lastPosition;
-
-		private uint? _movePointer;
+		private Random _random = new Random(0);
+		private int _maxLevelsToShow = 5;
 
 		private Hexagon _headHexagon = new Hexagon(new TerrainInfo());
 		private Hexagon _showingHexagon;
+
+		/// <summary>
+		/// Gets the centre position of the map canvas.
+		/// </summary>
+		public Point CanvasCentrePosition
+		{
+			get { return new Point(XamlCanvas.ActualWidth / 2.0, XamlCanvas.ActualHeight / 2.0); }
+		}
 
         public MainPage()
         {
@@ -41,157 +36,146 @@ namespace IntelOrca.RRHMG.Metro
 			this.Loaded += (s, e) => GenerateHexagons();
         }
 
-		/*
-		protected override void OnPointerPressed(PointerRoutedEventArgs e)
+		protected override void OnKeyDown(KeyRoutedEventArgs e)
 		{
-			base.OnPointerPressed(e);
+			base.OnKeyDown(e);
 
-			if (!_movePointer.HasValue) {
-				_movePointer = e.Pointer.PointerId;
-				_lastPosition = e.GetCurrentPoint(this).Position;
+			if (e.Key == VirtualKey.H) {
+				int numChildrenGenerated = 0;
+				int level = 1;
+				List<Hexagon> nextLevelOfHexagons =
+					_showingHexagon.Children == null ?
+						new[] { _showingHexagon }.ToList() :
+						_showingHexagon.Children.ToList();
+
+				do {
+					// Obtain the current level of hexagons and clear the list for the next level
+					var levelOfHexagonsPass = nextLevelOfHexagons.ToArray();
+					nextLevelOfHexagons.Clear();
+
+					// For each hexagon on this level
+					foreach (Hexagon hexagon in levelOfHexagonsPass) {
+						// Generate some children if there aren't any
+						if (hexagon.Children == null) {
+							hexagon.GenerateChildren(_random);
+							numChildrenGenerated += hexagon.Children.Length;
+						}
+
+						// Add the children to the next level of hexagons list
+						nextLevelOfHexagons.AddRange(hexagon.Children);
+					}
+
+					// Increment current level
+					level++;
+				} while (numChildrenGenerated == 0 && level < _maxLevelsToShow);
+
+				if (numChildrenGenerated > 0)
+					GenerateHexagons();
 			}
 		}
-
-		protected override void OnPointerReleased(PointerRoutedEventArgs e)
-		{
-			base.OnPointerReleased(e);
-
-			if (_movePointer == e.Pointer.PointerId)
-				_movePointer = null;
-		}
-
-		protected override void OnPointerMoved(PointerRoutedEventArgs e)
-		{
-			base.OnPointerMoved(e);
-
-			if (e.Pointer.PointerId != _movePointer)
-				return;
-
-			PointerPoint pp = e.GetCurrentPoint(this);
-			Point currentPosition = pp.Position;
-			if (pp.IsInContact) {
-				double dx = currentPosition.X - _lastPosition.X;
-				double dy = currentPosition.Y - _lastPosition.Y;
-
-				_translate = new Point(_translate.X + dx, _translate.Y + dy);
-				GenerateHexagons();
-			}
-
-			ttt.Text = String.Format("{0:000.0}, {1:000.0}", currentPosition.X, currentPosition.Y);
-			_lastPosition = currentPosition;			
-		}
-		*/
 
 		private void GenerateHexagons()
 		{
-			XamlCanvas.RenderTransform = new TranslateTransform() { X = _translate.X, Y = _translate.Y };
-
-			double cx = XamlCanvas.ActualWidth / 2.0;
-			double cy = XamlCanvas.ActualHeight / 2.0;
+			// Calculate the the hexagon size to cover the entire canvas
 			double size = Math.Max(XamlCanvas.ActualWidth, XamlCanvas.ActualHeight) * 0.75;
 
+			// Clear the canvas and regenerate the hexagons
 			XamlCanvas.Children.Clear();
-			foreach (HexagonShape hex in GenerateHexagon(size, new Point(cx, cy), _maxLevelsToShow, _showingHexagon))
+			foreach (HexagonShape hex in GenerateHexagon(size, CanvasCentrePosition, _maxLevelsToShow, _showingHexagon))
 				XamlCanvas.Children.Add(hex);
+
+			this.Focus(Windows.UI.Xaml.FocusState.Keyboard);
 		}
 
 		private IEnumerable<HexagonShape> GenerateHexagon(double size, Point position, int levels, Hexagon hexagon)
 		{
+			// Base case
 			if (levels < 0)
 				yield break;
 
-			IReadOnlyList<Point> offsets = new Point[] {
-				new Point(-0.75, -0.5),
-				new Point(-0.75, +0.5),
-				new Point( 0.00, -1.0),
-				new Point( 0.00,  0.0),
-				new Point( 0.00, +1.0),
-				new Point(+0.75, -0.5),
-				new Point(+0.75, +0.5),
-			};
-
+			// The child hexagon size calculation
 			double nextSize = size / 3.0;
 
+			// Get the width and height for this the next size down of this hexagon
 			double hexWidth = Hexagon.GetWidth(nextSize);
 			double hexHeight = Hexagon.GetHeight(nextSize);
-			offsets = offsets.Select(x => new Point(x.X * hexWidth, x.Y * hexHeight)).ToArray();
 
-			if (levels == 0 || hexagon.Children == null) {
+			// Multiply all the child offsets by the calculated hexagon width / height
+			var offsets = Hexagon.ChildOffsets.Select(x => new Point(x.X * hexWidth, x.Y * hexHeight)).ToArray();
+
+			// Do not draw any more child hexagons if we have reached the maximum display level or there are no children
+			if (levels > 0 && hexagon.Children != null) {
+				for (int i = 0; i < hexagon.Children.Length; i++) {
+					Point offset = offsets[i];
+
+					// Recursively generate child hexagon shapes
+					var hexagonShapes = GenerateHexagon(
+						nextSize,
+						new Point(position.X + offset.X, position.Y + offset.Y),
+						levels - 1,
+						hexagon.Children[i]
+					);
+
+					// Return all the child hexagon shapes
+					foreach (HexagonShape hex in hexagonShapes)
+						yield return hex;
+				}
+			} else {
+				// Return a single hexagon shape for this current hexagon
 				yield return GenerateHexagon(size, position, hexagon);
-				yield break;
 			}
-
-			var hexagons = new List<HexagonShape>();
-			for (int i = 0; i < hexagon.Children.Length; i++) {
-				Point p = offsets[i];
-				hexagons.AddRange(GenerateHexagon(nextSize, new Point(position.X + p.X, position.Y + p.Y), levels - 1, hexagon.Children[i]));
-			}
- 
-			foreach (HexagonShape hex in hexagons)
-				yield return hex;
-		}
-
-		private Random _rand = new Random();
-
-		private TerrainInfo GetRandomTerrain()
-		{
-			return new TerrainInfo() {
-				Height = _rand.NextDouble()
-			};
 		}
 
 		private HexagonShape GenerateHexagon(double size, Point position, Hexagon hexagon)
 		{
+			// Create the hexagon shape associated with this hexagon
 			var hex = new HexagonShape(hexagon, size);
 
+			// Set the position of the hexagon in the cavas container
 			Canvas.SetLeft(hex, position.X - (hex.Width / 2.0));
 			Canvas.SetTop(hex, position.Y - (hex.Height / 2.0));
 
-			hex.Tapped += (s, e) => {
-				var shex = s as HexagonShape;
-				// _showingHexagon = shex.Hexagon;
-				var tappedhex = shex.Hexagon;
-
-				int levelsDown = 1;
-				var currenthex = tappedhex;
-				while (currenthex.Parent != _showingHexagon && currenthex.Parent != null) {
-					currenthex = currenthex.Parent;
-					levelsDown++;
-				}
-
-				if (levelsDown < _maxLevelsToShow) {
-					if (tappedhex.Children == null) {
-						tappedhex.Children =
-							Enumerable.Range(0, 7).
-							Select(x => new Hexagon(tappedhex, GetRandomTerrain())).
-							ToArray();
-					}
-				} else {
-					_showingHexagon = currenthex;
-				}
-
-				GenerateHexagons();
-			};
-
-			hex.IsRightTapEnabled = true;
-			hex.RightTapped += (s, e) => {
-				var shex = s as HexagonShape;
-				if (_showingHexagon.Parent != null) {
-					_showingHexagon = _showingHexagon.Parent;
-					GenerateHexagons();
-				}
-			};
+			// Set their tap events
+			hex.Tapped += HexagonOnTapped;
+			hex.RightTapped += HexagonOnRightTapped;
 
 			return hex;
 		}
 
-        /// <summary>
-        /// Invoked when this page is about to be displayed in a Frame.
-        /// </summary>
-        /// <param name="e">Event data that describes how this page was reached.  The Parameter
-        /// property is typically used to configure the page.</param>
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-        }
+		void HexagonOnTapped(object sender, TappedRoutedEventArgs e)
+		{
+			var tappedHexagonShape = sender as HexagonShape;
+			var tappedHexagon = tappedHexagonShape.Hexagon;
+
+			// Find the number of levels down this hexagon is from the top level showing hexagon
+			int levelsDown = 1;
+			var nextLevelHexagon = tappedHexagon;
+			while (nextLevelHexagon.Parent != _showingHexagon && nextLevelHexagon.Parent != null) {
+				nextLevelHexagon = nextLevelHexagon.Parent;
+				levelsDown++;
+			}
+
+			// Check if the tapped hexagon's children are too deep to see
+			if (levelsDown < _maxLevelsToShow) {
+				// Generate children for the tapped hexagon
+				if (tappedHexagon.Children == null)
+					tappedHexagon.GenerateChildren(_random);
+			} else {
+				// Zoom in by one level
+				_showingHexagon = nextLevelHexagon;
+			}
+
+			// Redisplay
+			GenerateHexagons();
+		}
+
+		void HexagonOnRightTapped(object sender, RightTappedRoutedEventArgs e)
+		{
+			// If there is a parent, zoom out to the parent level
+			if (_showingHexagon.Parent != null) {
+				_showingHexagon = _showingHexagon.Parent;
+				GenerateHexagons();
+			}
+		}
     }
 }
