@@ -111,6 +111,8 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="DependencyPropertyWatcher.cs" />
+    <Compile Include="HexagonEventArgs.cs" />
+    <Compile Include="HexagonMap.cs" />
     <Compile Include="HexagonShape.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>

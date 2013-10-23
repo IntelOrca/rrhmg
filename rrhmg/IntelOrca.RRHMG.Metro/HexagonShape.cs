@@ -19,6 +19,9 @@ namespace IntelOrca.RRHMG.Metro
 		private readonly Polygon _polygon;
 		private Color _colour;
 
+		/// <summary>
+		/// Gets the <see cref="Hexagon"/> this shape is based on.
+		/// </summary>
 		public Hexagon Hexagon { get { return _hexagon; } }
 
 		#region Properties
@@ -74,6 +77,10 @@ namespace IntelOrca.RRHMG.Metro
 			Height = hexagonHeight;
 		}
 
+		/// <summary>
+		/// Called before the PointerEntered event occurs.
+		/// </summary>
+		/// <param name="e">Event data for the event.</param>
 		protected override void OnPointerEntered(PointerRoutedEventArgs e)
 		{
 			base.OnPointerEntered(e);
@@ -85,6 +92,10 @@ namespace IntelOrca.RRHMG.Metro
 			_polygon.Fill = new SolidColorBrush(c);
 		}
 
+		/// <summary>
+		/// Called before the PointerExited event occurs.
+		/// </summary>
+		/// <param name="e">Event data for the event.</param>
 		protected override void OnPointerExited(PointerRoutedEventArgs e)
 		{
 			base.OnPointerExited(e);

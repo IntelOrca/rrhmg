@@ -8,7 +8,7 @@
     mc:Ignorable="d">
 
     <Grid Background="#CCCCCC">
-        <Canvas x:Name="XamlCanvas" />
+        <local:HexagonMap x:Name="XamlHexagonMap" HexagonTapped="HexagonOnTapped" HexagonRightTapped="HexagonOnRightTapped" />
         <Grid x:Name="XamlOverlayGrid" Visibility="Collapsed">
             <TextBlock x:Name="ttt" Foreground="Black" FontSize="42" Text="Recursive random hexagonal map generator" FontFamily="Segoe UI" />
         </Grid>
