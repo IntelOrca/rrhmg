@@ -82,11 +82,20 @@ namespace IntelOrca.RRHMG
 
 		#region Static methods
 
+		public static double ChildSizeFactor = 1.0 / 3.0;
+
 		/// <summary>
 		/// The offsets in units of hexagon width / height for all child hexagons relative to the position of the parent
 		/// hexagon.
 		/// </summary>
 		public static IReadOnlyList<Point> ChildOffsets = new Point[] {
+			/*
+			new Point(-0.25, -0.5),
+			new Point(+0.50,  0.0),
+			new Point(-0.25, +0.5),
+			new Point(+0.50,  1.0),
+			*/
+
 			new Point(-0.75, -0.5),
 			new Point(-0.75,  0.5),
 			new Point( 0.00, -1.0),

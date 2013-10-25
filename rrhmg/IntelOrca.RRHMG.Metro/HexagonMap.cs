@@ -13,6 +13,8 @@ namespace IntelOrca.RRHMG.Metro
 	/// </summary>
 	public sealed class HexagonMap : Canvas
 	{
+		private const double _initialHexagonSizeFactor = 0.75;
+
 		private Hexagon _showingHexagon;
 		private int _maxLevelsToShow = 5;
 
@@ -74,7 +76,7 @@ namespace IntelOrca.RRHMG.Metro
 		public void GenerateHexagonShapes(double clientWidth, double clientHeight)
 		{
 			// Calculate the the top level hexagon size to cover the entire canvas
-			double size = Math.Max(clientWidth, clientHeight) * 0.75;
+			double size = Math.Max(clientWidth, clientHeight) * _initialHexagonSizeFactor;
 
 			// Calculate the centre position of the top level hexagon
 			Point centrePosition = new Point(clientWidth / 2.0, clientHeight / 2.0);
@@ -111,7 +113,7 @@ namespace IntelOrca.RRHMG.Metro
 				yield break;
 
 			// The child hexagon size calculation
-			double nextSize = size / 3.0;
+			double nextSize = size * Hexagon.ChildSizeFactor;
 
 			// Get the width and height for this the next size down of this hexagon
 			double hexWidth = Hexagon.GetWidth(nextSize);
@@ -138,6 +140,10 @@ namespace IntelOrca.RRHMG.Metro
 						yield return hex;
 				}
 			} else {
+				// Do not render the shape if it can't be seen
+				if (!IsHexagonVisible(position.X, position.Y, size))
+					yield break;
+
 				// Return a single hexagon shape for this current hexagon
 				yield return GenerateHexagonShape(size, position, hexagon);
 			}
@@ -229,6 +235,27 @@ namespace IntelOrca.RRHMG.Metro
 				_showingHexagon = _showingHexagon.Parent;
 				GenerateHexagonShapes();
 			}
+		}
+
+		/// <summary>
+		/// Checks whether a hexagon with the specified properties can be seen on the current canvas view.
+		/// </summary>
+		/// <param name="x">The centre X position of the hexagon.</param>
+		/// <param name="y">The centre Y position of the hexagon.</param>
+		/// <param name="size">The size of the hexagon.</param>
+		/// <returns>True if the hexagon is visible, otherwise false.</returns>
+		private bool IsHexagonVisible(double x, double y, double size)
+		{
+			// Get the hexagon width and height
+			double hw = Hexagon.GetWidth(size);
+			double hh = Hexagon.GetHeight(size);
+
+			// Get the hexagon bounds and the canvas bounds
+			var hexagonBounds = new Rect(x - hw / 2.0, y - hh / 2.0, hw, hh);
+			var canvasBounds = new Rect(0, 0, ActualWidth, ActualHeight);
+
+			// Return true if they intersect, i.e. the given hexagon is visible on the canvas
+			return canvasBounds.IntersectsWith(hexagonBounds);
 		}
 	}
 }

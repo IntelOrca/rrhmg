@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.Foundation;
 using Windows.UI.Xaml;
 
 namespace IntelOrca.RRHMG.Metro
@@ -15,6 +16,13 @@ namespace IntelOrca.RRHMG.Metro
 		public static void AddPropertyChangedHandler<T>(this DependencyObject parent, string propertyName, Action a)
 		{
 			new DependencyPropertyWatcher<T>(parent, propertyName).PropertyChanged += (s, e) => a();
+		}
+
+		public static bool IntersectsWith(this Rect a, Rect b)
+		{
+			return
+				(a.Right >= b.Left && a.Left < b.Right) &&
+				(a.Bottom >= b.Top && a.Top < b.Bottom);
 		}
 	}
 }
