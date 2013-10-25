@@ -79,6 +79,9 @@ namespace IntelOrca.RRHMG.Metro
 			// Calculate the centre position of the top level hexagon
 			Point centrePosition = new Point(clientWidth / 2.0, clientHeight / 2.0);
 
+			// Get all the non HexagonShape elements so they can be readded after the hexagons
+			IEnumerable<UIElement> overlayElements = Children.Where(x => !(x is HexagonShape)).ToArray();
+
 			// Clear the canvas and regenerate the hexagons
 			Children.Clear();
 
@@ -86,6 +89,10 @@ namespace IntelOrca.RRHMG.Metro
 			if (_showingHexagon != null)
 				foreach (HexagonShape hex in GenerateHexagonShapes(size, centrePosition, _maxLevelsToShow, _showingHexagon))
 					Children.Add(hex);
+
+			// Add the overlay elements
+			foreach (UIElement element in overlayElements)
+				Children.Add(element);
 		}
 
 		/// <summary>
