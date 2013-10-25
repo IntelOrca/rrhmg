@@ -75,7 +75,7 @@ namespace IntelOrca.RRHMG
 			// Generate the hexagons surrounding the central hexagon
 			for (int i = 0; i < numChildHexagonsToGenerate; i++)
 				if (i != centralHexagonIndex)
-					children[i] = new Hexagon(TerrainInfo.FromHexagon(this, random));
+					children[i] = new Hexagon(this, TerrainInfo.FromHexagon(this, random));
 
 			Children = children;
 		}
