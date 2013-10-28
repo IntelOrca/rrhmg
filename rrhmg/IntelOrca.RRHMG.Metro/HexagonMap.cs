@@ -16,6 +16,7 @@ namespace IntelOrca.RRHMG.Metro
 		private const double _initialHexagonSizeFactor = 0.75;
 
 		private Hexagon _showingHexagon;
+		private HexagonPattern _hexagonPattern;
 		private int _maxLevelsToShow = 5;
 
 		/// <summary>
@@ -41,6 +42,15 @@ namespace IntelOrca.RRHMG.Metro
 		}
 
 		/// <summary>
+		/// Gets or sets the hexagon pattern to use.
+		/// </summary>
+		public HexagonPattern HexagonPattern
+		{
+			get { return _hexagonPattern; }
+			set { _hexagonPattern = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets the maximum child level of hexagons to show.
 		/// </summary>
 		public int MaxLevelsToShow
@@ -57,6 +67,7 @@ namespace IntelOrca.RRHMG.Metro
 		/// </summary>
 		public HexagonMap()
 		{
+			_hexagonPattern = HexagonPattern.Patterns.Skip(0).First();
 			this.SizeChanged += (s, e) => GenerateHexagonShapes();
 		}
 
@@ -113,14 +124,14 @@ namespace IntelOrca.RRHMG.Metro
 				yield break;
 
 			// The child hexagon size calculation
-			double nextSize = size * Hexagon.ChildSizeFactor;
+			double nextSize = size * _hexagonPattern.ChildSizeFactor;
 
 			// Get the width and height for this the next size down of this hexagon
 			double hexWidth = Hexagon.GetWidth(nextSize);
 			double hexHeight = Hexagon.GetHeight(nextSize);
 
 			// Multiply all the child offsets by the calculated hexagon width / height
-			var offsets = Hexagon.ChildOffsets.Select(x => new Point(x.X * hexWidth, x.Y * hexHeight)).ToArray();
+			var offsets = _hexagonPattern.Offsets.Select(x => new Point(x.X * hexWidth, x.Y * hexHeight)).ToArray();
 
 			// Do not draw any more child hexagons if we have reached the maximum display level or there are no children
 			if (levels > 0 && hexagon.Children != null) {

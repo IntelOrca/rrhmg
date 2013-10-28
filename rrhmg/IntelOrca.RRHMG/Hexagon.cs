@@ -62,9 +62,9 @@ namespace IntelOrca.RRHMG
 		/// Generates child hexagons with terrain based on the terrain of this hexagon.
 		/// </summary>
 		/// <param name="random"></param>
-		public void GenerateChildren(Random random)
+		public void GenerateChildren(Random random, HexagonPattern pattern)
 		{
-			int numChildHexagonsToGenerate = ChildOffsets.Count;
+			int numChildHexagonsToGenerate = pattern.Offsets.Count;
 			int centralHexagonIndex = numChildHexagonsToGenerate / 2;
 
 			var children = new Hexagon[numChildHexagonsToGenerate];
@@ -81,29 +81,6 @@ namespace IntelOrca.RRHMG
 		}
 
 		#region Static methods
-
-		public static double ChildSizeFactor = 1.0 / 3.0;
-
-		/// <summary>
-		/// The offsets in units of hexagon width / height for all child hexagons relative to the position of the parent
-		/// hexagon.
-		/// </summary>
-		public static IReadOnlyList<Point> ChildOffsets = new Point[] {
-			/*
-			new Point(-0.25, -0.5),
-			new Point(+0.50,  0.0),
-			new Point(-0.25, +0.5),
-			new Point(+0.50,  1.0),
-			*/
-
-			new Point(-0.75, -0.5),
-			new Point(-0.75,  0.5),
-			new Point( 0.00, -1.0),
-			new Point( 0.00,  0.0),
-			new Point( 0.00,  1.0),
-			new Point( 0.75, -0.5),
-			new Point( 0.75,  0.5),
-		};
 
 		/// <summary>
 		/// The offsets of the hexagon polygon points in units of hexagon width / height relative to the position of the

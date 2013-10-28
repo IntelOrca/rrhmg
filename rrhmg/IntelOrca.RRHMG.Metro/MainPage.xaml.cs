@@ -50,7 +50,7 @@ namespace IntelOrca.RRHMG.Metro
 				foreach (Hexagon hexagon in levelOfHexagonsPass) {
 					// Generate some children if there aren't any
 					if (hexagon.Children == null) {
-						hexagon.GenerateChildren(_random);
+						hexagon.GenerateChildren(_random, XamlHexagonMap.HexagonPattern);
 						numChildrenGenerated += hexagon.Children.Length;
 					}
 
@@ -78,7 +78,7 @@ namespace IntelOrca.RRHMG.Metro
 			if (e.LevelDepth < XamlHexagonMap.MaxLevelsToShow) {
 				// Generate children for the tapped hexagon
 				if (e.Hexagon.Children == null)
-					e.Hexagon.GenerateChildren(_random);
+					e.Hexagon.GenerateChildren(_random, XamlHexagonMap.HexagonPattern);
 				e.Handled = true;
 			}
 		}
