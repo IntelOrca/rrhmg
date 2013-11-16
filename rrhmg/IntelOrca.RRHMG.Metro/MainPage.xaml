@@ -17,4 +17,10 @@
             </Grid>
         </local:HexagonMap>
     </Grid>
+    <Page.BottomAppBar>
+        <CommandBar>
+            <AppBarButton Label="Restart" Icon="Rotate" Click="RestartButtonOnClick" />
+            <AppBarButton Label="Help" Icon="Help" />
+        </CommandBar>
+    </Page.BottomAppBar>
 </Page>

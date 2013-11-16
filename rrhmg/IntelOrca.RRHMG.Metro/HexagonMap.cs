@@ -67,7 +67,7 @@ namespace IntelOrca.RRHMG.Metro
 		/// </summary>
 		public HexagonMap()
 		{
-			_hexagonPattern = HexagonPattern.Patterns.Skip(0).First();
+			_hexagonPattern = HexagonPattern.Patterns.Get(1);
 			this.SizeChanged += (s, e) => GenerateHexagonShapes();
 		}
 

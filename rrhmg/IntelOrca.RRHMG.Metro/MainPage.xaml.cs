@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -101,6 +102,17 @@ namespace IntelOrca.RRHMG.Metro
 		{
 			if (e.VirtualKey == VirtualKey.H)
 				RecurseNextHexagonLevel();
+		}
+
+		private void RestartButtonOnClick(object sender, RoutedEventArgs e)
+		{
+			var hexagonPatterns = HexagonPattern.Patterns.ToArray();
+			var hexagonPattern = hexagonPatterns[_random.Next(hexagonPatterns.Length)];
+
+			XamlHexagonMap.ShowingHexagon = new Hexagon(new TerrainInfo());
+			XamlHexagonMap.HexagonPattern = hexagonPattern;
+
+			BottomAppBar.IsOpen = false;
 		}
     }
 }
