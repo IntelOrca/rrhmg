@@ -5,6 +5,7 @@ using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 namespace IntelOrca.RRHMG.Metro
 {
@@ -18,6 +19,7 @@ namespace IntelOrca.RRHMG.Metro
 		private Hexagon _showingHexagon;
 		private HexagonPattern _hexagonPattern;
 		private int _maxLevelsToShow = 5;
+		private double _zoom = 1.0;
 
 		/// <summary>
 		/// Event for when a hexagon is tapped.
@@ -68,7 +70,17 @@ namespace IntelOrca.RRHMG.Metro
 		public HexagonMap()
 		{
 			_hexagonPattern = HexagonPattern.Patterns.Get(1);
-			this.SizeChanged += (s, e) => GenerateHexagonShapes();
+			SizeChanged += (s, e) => GenerateHexagonShapes();
+			this.ManipulationMode = ManipulationModes.All;
+			this.ManipulationDelta += (s, e) => {
+				System.Diagnostics.Debug.WriteLine(e.Velocities.Expansion);
+				_zoom += e.Velocities.Expansion * 0.25;
+
+				var transformation = new ScaleTransform();
+				transformation.ScaleX = transformation.ScaleY = _zoom;
+				foreach (var child in Children)
+					child.RenderTransform = transformation;
+			};
 		}
 
 		/// <summary>
@@ -87,12 +99,12 @@ namespace IntelOrca.RRHMG.Metro
 		public void GenerateHexagonShapes(double clientWidth, double clientHeight)
 		{
 			// Calculate the the top level hexagon size to cover the entire canvas
-			double size = Math.Max(clientWidth, clientHeight) * _initialHexagonSizeFactor;
+			double size = Math.Max(clientWidth, clientHeight) * _initialHexagonSizeFactor * _zoom;
 
 			// Calculate the centre position of the top level hexagon
 			Point centrePosition = new Point(clientWidth / 2.0, clientHeight / 2.0);
 
-			// Get all the non HexagonShape elements so they can be readded after the hexagons
+			// Get all the non HexagonShape elements so they can be re-added after the hexagons
 			IEnumerable<UIElement> overlayElements = Children.Where(x => !(x is HexagonShape)).ToArray();
 
 			// Clear the canvas and regenerate the hexagons
@@ -172,7 +184,7 @@ namespace IntelOrca.RRHMG.Metro
 			// Create the hexagon shape associated with this hexagon
 			var hex = new HexagonShape(hexagon, size);
 
-			// Set the position of the hexagon in the cavas container
+			// Set the position of the hexagon in the canvas container
 			Canvas.SetLeft(hex, position.X - (hex.Width / 2.0));
 			Canvas.SetTop(hex, position.Y - (hex.Height / 2.0));
 
