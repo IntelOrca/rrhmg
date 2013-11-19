@@ -19,6 +19,8 @@ namespace IntelOrca.RRHMG.Metro
 		private Hexagon _showingHexagon;
 		private HexagonPattern _hexagonPattern;
 		private int _maxLevelsToShow = 5;
+
+		private Point _pan;
 		private double _zoom = 1.0;
 
 		/// <summary>
@@ -73,13 +75,12 @@ namespace IntelOrca.RRHMG.Metro
 			SizeChanged += (s, e) => GenerateHexagonShapes();
 			this.ManipulationMode = ManipulationModes.All;
 			this.ManipulationDelta += (s, e) => {
-				System.Diagnostics.Debug.WriteLine(e.Velocities.Expansion);
-				_zoom += e.Velocities.Expansion * 0.25;
+				_pan.X += e.Velocities.Linear.X * 4.0;
+				_pan.Y += e.Velocities.Linear.Y * 4.0;
+				_zoom = MathX.Clamp(_zoom + e.Velocities.Expansion / 8.0, 1.0, 2.0);
 
-				var transformation = new ScaleTransform();
-				transformation.ScaleX = transformation.ScaleY = _zoom;
-				foreach (var child in Children)
-					child.RenderTransform = transformation;
+				foreach (HexagonShape hexagonShape in Children.OfType<HexagonShape>())
+					hexagonShape.RenderTransform = GetHexagonTransformation(hexagonShape);
 			};
 		}
 
@@ -188,6 +189,9 @@ namespace IntelOrca.RRHMG.Metro
 			Canvas.SetLeft(hex, position.X - (hex.Width / 2.0));
 			Canvas.SetTop(hex, position.Y - (hex.Height / 2.0));
 
+			// Set the transformation
+			hex.RenderTransform = GetHexagonTransformation(hex);
+
 			// Set their tap events
 			hex.Tapped += HexagonOnTapped;
 			hex.RightTapped += HexagonOnRightTapped;
@@ -279,6 +283,28 @@ namespace IntelOrca.RRHMG.Metro
 
 			// Return true if they intersect, i.e. the given hexagon is visible on the canvas
 			return canvasBounds.IntersectsWith(hexagonBounds);
+		}
+
+		/// <summary>
+		/// Gets the transformation for a hexagon based on the current pan and zoom.
+		/// </summary>
+		/// <param name="hexagonShape">The hexagon to transform.</param>
+		/// <returns>The transformation.</returns>
+		private Transform GetHexagonTransformation(HexagonShape hexagonShape)
+		{
+			var scaleTransformation = new ScaleTransform();
+			scaleTransformation.ScaleX = scaleTransformation.ScaleY = _zoom;
+			scaleTransformation.CenterX = (ActualWidth / 2.0) - Canvas.GetLeft(hexagonShape);
+			scaleTransformation.CenterY = (ActualHeight / 2.0) - Canvas.GetTop(hexagonShape);
+
+			var translationTransformation = new TranslateTransform();
+			translationTransformation.X += _pan.X;
+			translationTransformation.Y += _pan.Y;
+
+			var transformGroup = new TransformGroup();
+			transformGroup.Children.Add(scaleTransformation);
+			transformGroup.Children.Add(translationTransformation);
+			return transformGroup;
 		}
 	}
 }

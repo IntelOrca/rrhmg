@@ -20,5 +20,21 @@ namespace IntelOrca.RRHMG
 		{
 			return a + t * (b - a);
 		}
+
+		/// <summary>
+		/// Returns the the specified number or the lower / higher bound if it lies outside the specified range.
+		/// </summary>
+		/// <param name="x">The number to clamp.</param>
+		/// <param name="low">The lower bound.</param>
+		/// <param name="high">The upper bound.</param>
+		/// <returns><paramref name="low"/>, <paramref name="x"/> or <paramref name="high"/>.</returns>
+		public static double Clamp(double x, double low, double high)
+		{
+			if (x < low)
+				return low;
+			if (x > high)
+				return high;
+			return x;
+		}
 	}
 }

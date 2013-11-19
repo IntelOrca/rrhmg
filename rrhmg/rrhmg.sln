@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntelOrca.RRHMG.Prototype", "IntelOrca.RRHMG.Prototype\IntelOrca.RRHMG.Prototype.csproj", "{A1B20CD1-32D3-4872-813C-7A6B502343C9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntelOrca.RRHMG.Metro", "IntelOrca.RRHMG.Metro\IntelOrca.RRHMG.Metro.csproj", "{AB9799E2-B2B9-4197-ADCA-C3B25DF2FF79}"
@@ -72,8 +74,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal
