@@ -108,6 +108,7 @@ namespace IntelOrca.RRHMG.Metro
 		{
 			var hexagonPatterns = HexagonPattern.Patterns.ToArray();
 			var hexagonPattern = hexagonPatterns[_random.Next(hexagonPatterns.Length)];
+			hexagonPattern = hexagonPatterns[0];
 
 			XamlHexagonMap.ShowingHexagon = new Hexagon(new TerrainInfo());
 			XamlHexagonMap.HexagonPattern = hexagonPattern;

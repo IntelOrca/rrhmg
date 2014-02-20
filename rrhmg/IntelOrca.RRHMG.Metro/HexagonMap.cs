@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -22,6 +23,9 @@ namespace IntelOrca.RRHMG.Metro
 
 		private Point _pan;
 		private double _zoom = 1.0;
+
+		private readonly List<HexagonShape> _availableHexagons = new List<HexagonShape>();
+		private bool _useOptimisedHexagonCreation;
 
 		/// <summary>
 		/// Event for when a hexagon is tapped.
@@ -71,7 +75,7 @@ namespace IntelOrca.RRHMG.Metro
 		/// </summary>
 		public HexagonMap()
 		{
-			_hexagonPattern = HexagonPattern.Patterns.Get(1);
+			_hexagonPattern = HexagonPattern.Patterns.Get(0);
 			SizeChanged += (s, e) => GenerateHexagonShapes();
 			this.ManipulationMode = ManipulationModes.All;
 			this.ManipulationDelta += (s, e) => {
@@ -81,6 +85,8 @@ namespace IntelOrca.RRHMG.Metro
 
 				foreach (HexagonShape hexagonShape in Children.OfType<HexagonShape>())
 					hexagonShape.RenderTransform = GetHexagonTransformation(hexagonShape);
+
+				ShouldWeSeeNeighbouringHexagons();
 			};
 		}
 
@@ -105,20 +111,43 @@ namespace IntelOrca.RRHMG.Metro
 			// Calculate the centre position of the top level hexagon
 			Point centrePosition = new Point(clientWidth / 2.0, clientHeight / 2.0);
 
-			// Get all the non HexagonShape elements so they can be re-added after the hexagons
-			IEnumerable<UIElement> overlayElements = Children.Where(x => !(x is HexagonShape)).ToArray();
+			IEnumerable<UIElement> overlayElements = null;
 
-			// Clear the canvas and regenerate the hexagons
-			Children.Clear();
+			if (_useOptimisedHexagonCreation) {
+				// Free up all the hexagons
+				_availableHexagons.Clear();
+				foreach (HexagonShape hexagonShape in Children.OfType<HexagonShape>())
+					_availableHexagons.Add(hexagonShape);
+			} else {
+				// Get all the non HexagonShape elements so they can be re-added after the hexagons
+				overlayElements = Children.Where(x => !(x is HexagonShape)).ToArray();
+
+				// Clear the canvas and regenerate the hexagons
+				Children.Clear();
+			}
 
 			// Add all the hexagons from the top level hexagon
-			if (_showingHexagon != null)
-				foreach (HexagonShape hex in GenerateHexagonShapes(size, centrePosition, _maxLevelsToShow, _showingHexagon))
-					Children.Add(hex);
+			if (_showingHexagon != null) {
+				foreach (HexagonShape hex in GenerateHexagonShapes(size, centrePosition, _maxLevelsToShow, _showingHexagon)) {
+					if (_useOptimisedHexagonCreation) {
+						if (!Children.Contains(hex))
+							Children.Insert(0, hex);
+						else if (hex.Visibility != Visibility.Visible)
+							hex.Visibility = Visibility.Visible;
+					} else {
+						Children.Add(hex);
+					}
+				}
+			}
 
-			// Add the overlay elements
-			foreach (UIElement element in overlayElements)
-				Children.Add(element);
+			if (_useOptimisedHexagonCreation) {
+				foreach (HexagonShape hexagonShape in _availableHexagons)
+					hexagonShape.Visibility = Visibility.Collapsed;
+			} else {
+				// Add the overlay elements
+				foreach (UIElement element in overlayElements)
+					Children.Add(element);
+			}
 		}
 
 		/// <summary>
@@ -182,8 +211,18 @@ namespace IntelOrca.RRHMG.Metro
 		/// <returns>A <see cref="HexagonShape"/> representing <paramref name="hexagon"/>.</returns>
 		private HexagonShape GenerateHexagonShape(double size, Point position, Hexagon hexagon)
 		{
-			// Create the hexagon shape associated with this hexagon
-			var hex = new HexagonShape(hexagon, size);
+			HexagonShape hex;
+
+			if (_useOptimisedHexagonCreation && _availableHexagons.Count > 0) {
+				hex = _availableHexagons[0];
+				_availableHexagons.RemoveAt(0);
+
+				hex.Hexagon = hexagon;
+				hex.Size = size;
+			} else {
+				// Create the hexagon shape associated with this hexagon
+				hex = new HexagonShape(hexagon, size);
+			}
 
 			// Set the position of the hexagon in the canvas container
 			Canvas.SetLeft(hex, position.X - (hex.Width / 2.0));
@@ -237,11 +276,12 @@ namespace IntelOrca.RRHMG.Metro
 				HexagonTapped.Invoke(this, hexagonEventArgs);
 
 			// Zoom in by one level by default
-			if (!hexagonEventArgs.Handled)
-				_showingHexagon = nextLevelHexagon;
+			// if (!hexagonEventArgs.Handled)
+			//	_showingHexagon = nextLevelHexagon;
 
 			// Redisplay
 			GenerateHexagonShapes();
+			e.Handled = true;
 		}
 
 		/// <summary>
@@ -305,6 +345,22 @@ namespace IntelOrca.RRHMG.Metro
 			transformGroup.Children.Add(scaleTransformation);
 			transformGroup.Children.Add(translationTransformation);
 			return transformGroup;
+		}
+
+		private void ShouldWeSeeNeighbouringHexagons()
+		{
+			double topLevelHexagonSize = Math.Max(ActualWidth, ActualHeight) * _initialHexagonSizeFactor * _zoom;
+			double xMaxPan = topLevelHexagonSize / 2.0;
+			double yMaxPan = topLevelHexagonSize / 2.0;
+
+			if (Math.Abs(_pan.X) > xMaxPan || Math.Abs(_pan.Y) > yMaxPan) {
+				if (_showingHexagon.Parent == null)
+					return;
+				_showingHexagon = _showingHexagon.Parent;
+				GenerateHexagonShapes();
+			}
+
+			return;
 		}
 	}
 }

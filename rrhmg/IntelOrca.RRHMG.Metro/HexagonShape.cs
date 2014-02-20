@@ -15,14 +15,13 @@ namespace IntelOrca.RRHMG.Metro
 	/// </summary>
 	public sealed class HexagonShape : ContentControl
 	{
-		private readonly Hexagon _hexagon;
 		private readonly Polygon _polygon;
 		private Color _colour;
 
 		/// <summary>
-		/// Gets the <see cref="Hexagon"/> this shape is based on.
+		/// Gets or sets the <see cref="Hexagon"/> this shape is based on.
 		/// </summary>
-		public Hexagon Hexagon { get { return _hexagon; } }
+		public Hexagon Hexagon { get; set; }
 
 		#region Properties
 
@@ -48,7 +47,7 @@ namespace IntelOrca.RRHMG.Metro
 		/// </summary>
 		public HexagonShape(Hexagon hexagon, double size)
 		{
-			_hexagon = hexagon;
+			Hexagon = hexagon;
 			Content = _polygon = new Polygon();
 			Size = size;
 
@@ -69,7 +68,7 @@ namespace IntelOrca.RRHMG.Metro
 				_polygon.Points.Add(new Point(offset.X * hexagonWidth, offset.Y * hexagonHeight));
 
 			// Set the appearance
-			_colour = TerrainRenderer.GetTerrainColour(_hexagon.TerrainInfo);
+			_colour = TerrainRenderer.GetTerrainColour(Hexagon.TerrainInfo);
 			_polygon.Fill = new SolidColorBrush(_colour);
 
 			// Set the final control size
