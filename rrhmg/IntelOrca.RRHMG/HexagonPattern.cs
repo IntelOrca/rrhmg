@@ -46,6 +46,21 @@ namespace IntelOrca.RRHMG
 		/// </summary>
 		private static IDictionary<string, HexagonPattern> PaternDictionary = 
 			new [] {
+				new HexagonPattern("8-flower", 1.0 / 3.0, new Point[] {
+					new Point(-0.75, -0.5),
+					new Point(-0.75,  0.5),
+
+					new Point( 0.00, -1.0),
+					new Point( 0.00,  0.0),
+					new Point( 0.00,  1.0),
+					
+					new Point( 0.75, -0.5),
+					new Point( 0.75,  0.5),
+					new Point( 0.75,  1.5),
+
+					new Point( 1.50,  0.0)
+					// new Point( 1.50,  1.0),
+				}),
 				new HexagonPattern("ThreeOverOne", 1.0 / 2.0, new Point[] {
 					new Point(-0.25, -0.5),
 					new Point(+0.50,  0.0),
