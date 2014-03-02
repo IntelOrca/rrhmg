@@ -22,7 +22,7 @@ namespace IntelOrca.RRHMG.Metro
 		private int _maxLevelsToShow = 5;
 
 		private Point _pan;
-		private double _zoom = 1.0;
+		private double _zoom = 0.5;
 
 		private readonly List<HexagonShape> _availableHexagons = new List<HexagonShape>();
 		private bool _useOptimisedHexagonCreation;

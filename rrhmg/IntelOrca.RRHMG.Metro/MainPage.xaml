@@ -19,8 +19,13 @@
     </Grid>
     <Page.BottomAppBar>
         <CommandBar>
-            <AppBarButton Label="Restart" Icon="Rotate" Click="RestartButtonOnClick" />
-            <AppBarButton Label="Help" Icon="Help" />
+            <CommandBar.PrimaryCommands>
+                <AppBarButton Label="Restart" Icon="Rotate" Click="RestartButtonOnClick" />
+                <AppBarButton Label="Help" Icon="Help" />
+            </CommandBar.PrimaryCommands>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton Label="Select pattern" Icon="ClearSelection" Click="SelectPatternOnClick" />
+            </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>
 </Page>

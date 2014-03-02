@@ -5,6 +5,7 @@ using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace IntelOrca.RRHMG.Metro
 {
@@ -15,6 +16,8 @@ namespace IntelOrca.RRHMG.Metro
     {
 		private Random _random = new Random(0);
 
+		public static HexagonPattern HexagonPattern { get; set; }
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MainPage"/> class.
 		/// </summary>
@@ -24,6 +27,7 @@ namespace IntelOrca.RRHMG.Metro
 
 			// Start showing hexagon level
 			XamlHexagonMap.ShowingHexagon = new Hexagon(new TerrainInfo());
+			XamlHexagonMap.HexagonPattern = HexagonPattern == null ? HexagonPattern.Patterns.First() : HexagonPattern;
 
 			// Extra events
 			Window.Current.CoreWindow.KeyDown += OnKeyDown;
@@ -115,5 +119,10 @@ namespace IntelOrca.RRHMG.Metro
 
 			BottomAppBar.IsOpen = false;
 		}
-    }
+
+		private void SelectPatternOnClick(object sender, RoutedEventArgs e)
+		{
+			Frame.Navigate(typeof(PatternSelectionPage), this);
+		}
+	}
 }
