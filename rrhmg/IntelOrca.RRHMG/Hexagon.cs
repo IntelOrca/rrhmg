@@ -39,6 +39,19 @@ namespace IntelOrca.RRHMG
 		}
 
 		/// <summary>
+		/// Gets the maximum number of levels below this hexagon.
+		/// </summary>
+		public int Levels
+		{
+			get
+			{
+				if (Children == null)
+					return 0;
+				return Children.Max(x => x.Levels) + 1;
+			}
+		}
+
+		/// <summary>
 		/// Initialises a new instance of the <see cref="Hexagon"/> class.
 		/// </summary>
 		/// <param name="terrainInfo">The terrain info.</param>
@@ -64,7 +77,7 @@ namespace IntelOrca.RRHMG
 		/// <param name="random"></param>
 		public void GenerateChildren(Random random, HexagonPattern pattern)
 		{
-			int numChildHexagonsToGenerate = pattern.Offsets.Count;
+			int numChildHexagonsToGenerate = pattern.ChildrenInfo.Count;
 			int centralHexagonIndex = numChildHexagonsToGenerate / 2;
 
 			var children = new Hexagon[numChildHexagonsToGenerate];
@@ -73,11 +86,38 @@ namespace IntelOrca.RRHMG
 			children[centralHexagonIndex] = new Hexagon(this, TerrainInfo);
 
 			// Generate the hexagons surrounding the central hexagon
-			for (int i = 0; i < numChildHexagonsToGenerate; i++)
-				if (i != centralHexagonIndex)
+			for (int i = 0; i < numChildHexagonsToGenerate; i++) {
+				if (i == centralHexagonIndex)
+					continue;
+
+				if (Parent != null && pattern.ChildrenInfo[i].ParentInfluences.Count > 0) {
+					double height = 0;
+					foreach (int parentIndex in pattern.ChildrenInfo[i].ParentInfluences) {
+						Hexagon influencingHexagon = Parent.Children[parentIndex];
+						height += influencingHexagon.TerrainInfo.Height;
+					}
+					height /= pattern.ChildrenInfo[i].ParentInfluences.Count;
+
+					height += random.NextDoubleSigned() * 0.2;
+
+					children[i] = new Hexagon(this, new TerrainInfo() { Height = height, Visible = false });
+				} else {
 					children[i] = new Hexagon(this, TerrainInfo.FromHexagon(this, random));
+				}					
+			}
 
 			Children = children;
+		}
+
+		/// <summary>
+		/// Returns a <see cref="System.String" /> that represents this instance.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.String" /> that represents this instance.
+		/// </returns>
+		public override string ToString()
+		{
+			return TerrainInfo.ToString();
 		}
 
 		#region Static methods

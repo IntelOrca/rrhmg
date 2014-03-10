@@ -16,6 +16,27 @@ namespace IntelOrca.RRHMG
 		/// </summary>
 		public double Height { get; set; }
 
+		public bool Visible { get; set; }
+
+		/// <summary>
+		/// Initialises a new instance of the <see cref="TerrainInfo"/> class.
+		/// </summary>
+		public TerrainInfo()
+		{
+			Visible = true;
+		}
+
+		/// <summary>
+		/// Returns a <see cref="System.String" /> that represents this instance.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.String" /> that represents this instance.
+		/// </returns>
+		public override string ToString()
+		{
+			return Height.ToString();
+		}
+
 		/// <summary>
 		/// Creates a new <see cref="TerrainInfo"/> based on the given hexagon.
 		/// </summary>
@@ -27,19 +48,34 @@ namespace IntelOrca.RRHMG
 			var ti = new TerrainInfo();
 
 			// Basic height variation
+
+			double range = hexagon.Parent == null ?
+				0.0 :
+				hexagon.Siblings.Max(x => x.TerrainInfo.Height) - hexagon.Siblings.Min(x => x.TerrainInfo.Height);
+
 			double avg = hexagon.TerrainInfo.Height;
 			avg = hexagon.Parent == null ?
 				hexagon.TerrainInfo.Height :
-				hexagon.Parent.Children.Average(x => x.TerrainInfo.Height);
+				hexagon.Siblings.Average(x => x.TerrainInfo.Height);
 
 			ti.Height = avg;
-			if (avg < 0.25) {
-				if (random.Next(0, 24) == 0)
-					ti.Height = 1.0 - avg;
+
+			if (range == 0) {
+				// Larger chance of rough
+				if (random.Next(0, 2) == 0)
+					ti.Height += random.NextDoubleSigned() * 2.0;
 			} else {
-				if (random.Next(0, 8) == 0)
-					ti.Height = 1.0 - avg;
+				// Larger chance of smooth
+				if (avg < 0.25) {
+					if (random.Next(0, 8) == 0)
+						ti.Height = 1.0 - avg;
+				} else {
+					if (random.Next(0, 16) == 0)
+						ti.Height = 1.0 - avg;
+				}
 			}
+
+			ti.Height = MathX.Clamp(ti.Height, 0.0, 1.0);
 
 			return ti;
 		}

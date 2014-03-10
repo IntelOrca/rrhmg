@@ -83,7 +83,8 @@ namespace IntelOrca.RRHMG.Metro
 			double hexHeight = Hexagon.GetHeight(nextSize);
 
 			// Multiply all the child offsets by the calculated hexagon width / height
-			var offsets = pattern.Offsets
+			var offsets = pattern.ChildrenInfo
+				.Select(x => x.Offset)
 				.Select(x => new Point(x.X * hexWidth, x.Y * hexHeight))
 				.ToArray();
 

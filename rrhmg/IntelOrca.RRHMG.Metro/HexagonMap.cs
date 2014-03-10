@@ -77,6 +77,8 @@ namespace IntelOrca.RRHMG.Metro
 		{
 			_hexagonPattern = HexagonPattern.Patterns.Get(0);
 			SizeChanged += (s, e) => GenerateHexagonShapes();
+
+			/*
 			this.ManipulationMode = ManipulationModes.All;
 			this.ManipulationDelta += (s, e) => {
 				_pan.X += e.Velocities.Linear.X * 4.0;
@@ -88,6 +90,7 @@ namespace IntelOrca.RRHMG.Metro
 
 				ShouldWeSeeNeighbouringHexagons();
 			};
+			*/
 		}
 
 		/// <summary>
@@ -173,7 +176,10 @@ namespace IntelOrca.RRHMG.Metro
 			double hexHeight = Hexagon.GetHeight(nextSize);
 
 			// Multiply all the child offsets by the calculated hexagon width / height
-			var offsets = _hexagonPattern.Offsets.Select(x => new Point(x.X * hexWidth, x.Y * hexHeight)).ToArray();
+			var offsets = _hexagonPattern.ChildrenInfo
+				.Select(x => x.Offset)
+				.Select(x => new Point(x.X * hexWidth, x.Y * hexHeight))
+				.ToArray();
 
 			// Do not draw any more child hexagons if we have reached the maximum display level or there are no children
 			if (levels > 0 && hexagon.Children != null) {
@@ -313,6 +319,8 @@ namespace IntelOrca.RRHMG.Metro
 		/// <returns>True if the hexagon is visible, otherwise false.</returns>
 		private bool IsHexagonVisible(double x, double y, double size)
 		{
+			return true;
+
 			// Get the hexagon width and height
 			double hw = Hexagon.GetWidth(size);
 			double hh = Hexagon.GetHeight(size);

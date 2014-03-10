@@ -1,4 +1,5 @@
 ﻿
+using System;
 namespace IntelOrca.RRHMG
 {
 	/// <summary>
@@ -35,6 +36,16 @@ namespace IntelOrca.RRHMG
 			if (x > high)
 				return high;
 			return x;
+		}
+
+		/// <summary>
+		/// Gets a random double value between -1.0 and 1.0.
+		/// </summary>
+		/// <param name="random">The random.</param>
+		/// <returns>A random double between -1.0 and 1.0.</returns>
+		public static double NextDoubleSigned(this Random random)
+		{
+			return (random.NextDouble() * 2.0) - 1.0;
 		}
 	}
 }

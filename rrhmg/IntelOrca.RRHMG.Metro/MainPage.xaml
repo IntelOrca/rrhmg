@@ -6,20 +6,32 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+    
+    <Page.Resources>
+        <Style x:Key="StatisticTextBlockStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="FontSize" Value="30" />
+            <Setter Property="TextAlignment" Value="Right" />
+        </Style>
+    </Page.Resources>
 
     <Grid Background="#CCCCCC">
-        <local:HexagonMap x:Name="XamlHexagonMap" HexagonTapped="HexagonOnTapped" HexagonRightTapped="HexagonOnRightTapped">
-            <Grid>
-                <TextBlock x:Name="XamlTitleShadowTextBlock" Margin="9,9,0,0" Foreground="Black" FontSize="42" FontFamily="Segoe UI"
+        <Grid>
+            <local:HexagonMap x:Name="XamlHexagonMap" HexagonTapped="HexagonOnTapped" HexagonRightTapped="HexagonOnRightTapped">
+                <Grid>
+                    <TextBlock x:Name="XamlTitleShadowTextBlock" Margin="9,9,0,0" Foreground="Black" FontSize="42" FontFamily="Segoe UI"
                        Text="Recursive random hexagonal map generator" />
-                <TextBlock x:Name="XamlTitleTextBlock" Margin="8,8,0,0" Foreground="White" FontSize="42" FontFamily="Segoe UI"
+                    <TextBlock x:Name="XamlTitleTextBlock" Margin="8,8,0,0" Foreground="White" FontSize="42" FontFamily="Segoe UI"
                        Text="Recursive random hexagonal map generator" />
-            </Grid>
-        </local:HexagonMap>
+                </Grid>
+            </local:HexagonMap>
+            <StackPanel x:Name="XamlStatisticsContainer" HorizontalAlignment="Right" Margin="0,64,9,9" />
+        </Grid>
     </Grid>
     <Page.BottomAppBar>
         <CommandBar>
             <CommandBar.PrimaryCommands>
+                <AppBarButton Label="Demonstration" Icon="Play" Click="DemonstrationButtonOnClick" />
                 <AppBarButton Label="Restart" Icon="Rotate" Click="RestartButtonOnClick" />
                 <AppBarButton Label="Help" Icon="Help" />
             </CommandBar.PrimaryCommands>

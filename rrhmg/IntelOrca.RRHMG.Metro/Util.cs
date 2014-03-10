@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 
 namespace IntelOrca.RRHMG.Metro
@@ -46,6 +48,52 @@ namespace IntelOrca.RRHMG.Metro
 			return
 				(a.Right >= b.Left && a.Left < b.Right) &&
 				(a.Bottom >= b.Top && a.Top < b.Bottom);
+		}
+
+		/// <summary>
+		/// Creates a new WAV stream representing a beep sound given a amplitude, frequency and duration.
+		/// </summary>
+		/// <param name="amplitude">The amplitude between 0 and 32767.</param>
+		/// <param name="frequency">The frequency in hertz.</param>
+		/// <param name="duration">The duration in milliseconds.</param>
+		/// <returns>A random accessable WAV PCM data stream.</returns>
+		/// <remarks>Adapted from
+		/// http://social.msdn.microsoft.com/Forums/vstudio/en-US/18fe83f0-5658-4bcf-bafc-2e02e187eb80/beep-beep
+		/// </remarks>
+		public static async Task<IRandomAccessStream> GetBeepStream(int amplitude, int frequency, int duration)
+		{
+			// Calculate wave
+			double a = ((amplitude * (Math.Pow(2, 15))) / 1000) - 1;
+			double deltaFT = 2 * Math.PI * frequency / 44100.0;
+
+			// Prepare WAV header
+			int samples = 441 * duration / 10;
+			int bytes = samples * 4;
+			int[] header = {
+				0X46464952, 36 + bytes, 0X45564157, 0X20746D66, 16, 0X20001, 44100, 176400, 0X100004, 0X61746164, bytes
+			};
+
+			// Prepare a WAV data stream
+			var ims = new InMemoryRandomAccessStream();
+			IOutputStream outStream = ims.GetOutputStreamAt(0);
+			var dw = new DataWriter(outStream);
+			dw.ByteOrder = ByteOrder.LittleEndian;
+
+			// Write header
+			for (int i = 0; i < header.Length; i++)
+				dw.WriteInt32(header[i]);
+
+			// Write samples
+			for (int t = 0; t < samples; t++) {
+				short sampleValue = Convert.ToInt16(a * Math.Sin(deltaFT * t));
+				dw.WriteInt16(sampleValue);
+				dw.WriteInt16(sampleValue);
+			}
+
+			// Flush the WAV stream
+			await dw.StoreAsync();
+			await outStream.FlushAsync();
+			return ims;
 		}
 	}
 }
