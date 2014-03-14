@@ -52,6 +52,24 @@ namespace IntelOrca.RRHMG
 		}
 
 		/// <summary>
+		/// Gets all the hexagons that descend from this one.
+		/// </summary>
+		public IEnumerable<Hexagon> Descendants
+		{
+			get
+			{
+				if (Children == null)
+					yield break;
+
+				foreach (Hexagon child in Children) {
+					yield return child;
+					foreach (Hexagon hexagon in child.Descendants)
+						yield return hexagon;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Initialises a new instance of the <see cref="Hexagon"/> class.
 		/// </summary>
 		/// <param name="terrainInfo">The terrain info.</param>

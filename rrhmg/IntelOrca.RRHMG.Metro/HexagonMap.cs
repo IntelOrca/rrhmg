@@ -25,7 +25,7 @@ namespace IntelOrca.RRHMG.Metro
 		private double _zoom = 0.5;
 
 		private readonly List<HexagonShape> _availableHexagons = new List<HexagonShape>();
-		private bool _useOptimisedHexagonCreation;
+		private bool _useOptimisedHexagonCreation = false;
 
 		/// <summary>
 		/// Event for when a hexagon is tapped.
@@ -282,8 +282,8 @@ namespace IntelOrca.RRHMG.Metro
 				HexagonTapped.Invoke(this, hexagonEventArgs);
 
 			// Zoom in by one level by default
-			// if (!hexagonEventArgs.Handled)
-			//	_showingHexagon = nextLevelHexagon;
+			if (!hexagonEventArgs.Handled)
+				_showingHexagon = nextLevelHexagon;
 
 			// Redisplay
 			GenerateHexagonShapes();

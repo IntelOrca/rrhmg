@@ -70,10 +70,19 @@ namespace IntelOrca.RRHMG.Metro
 
 			// Hexagon preview is in a canvas
 			var canvas = new Canvas() {
-				Height = 256 - 35
+				Width = sp.Width,
+				Height = sp.Height - 35
 			};
 
 			double size = sp.Height / 4.0;
+
+			// Parent hexagon
+			var parentHex = new HexagonShape(new Hexagon(new TerrainInfo()), size);
+			parentHex.Colour = Color.FromArgb(32, 255, 255, 255);
+			parentHex.HighlightOnHover = false;
+			Canvas.SetLeft(parentHex, (canvas.Width - Hexagon.GetWidth(size)) / 2.0);
+			Canvas.SetTop(parentHex, (canvas.Height - Hexagon.GetHeight(size)) / 2.0);
+			canvas.Children.Add(parentHex);
 
 			// The child hexagon size calculation
 			double nextSize = size * pattern.ChildSizeFactor;
@@ -91,20 +100,25 @@ namespace IntelOrca.RRHMG.Metro
 			// Create each hexagon
 			foreach (Point p in offsets) {
 				var hex = new HexagonShape(new Hexagon(new TerrainInfo()), nextSize);
-				((Polygon)hex.Content).Fill = new SolidColorBrush(Colors.White);
-				Canvas.SetLeft(hex, (250 / 2.0) + p.X - (hexWidth / 2.0));
-				Canvas.SetTop(hex, (250 / 2.0) + p.Y - (hexHeight / 2.0));
+				hex.Colour = Color.FromArgb(192, 255, 255, 255);
+				hex.HighlightOnHover = false;
+				Canvas.SetLeft(hex, (canvas.Width / 2.0) + p.X - (hexWidth / 2.0));
+				Canvas.SetTop(hex, (canvas.Height / 2.0) + p.Y - (hexHeight / 2.0));
 				canvas.Children.Add(hex);
 			}
 			sp.Children.Add(canvas);
 
 			// Create name
-			var textBlock = new TextBlock() {
-				Text = pattern.Name,
-				FontSize = 20,
-				TextAlignment = TextAlignment.Center
+			var border = new Border() {
+				Background = new SolidColorBrush(Colors.DarkGray),
+				Child = new TextBlock() {
+					Text = pattern.Name,
+					FontSize = 20,
+					TextAlignment = TextAlignment.Center,
+					Height = 35
+				}
 			};
-			sp.Children.Add(textBlock);
+			sp.Children.Add(border);
 
 			// Return the stack panel container
 			return sp;

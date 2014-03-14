@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Windows.System;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -43,6 +44,8 @@ namespace IntelOrca.RRHMG.Metro
 
 			// Extra events
 			Window.Current.CoreWindow.KeyDown += OnKeyDown;
+
+			XamlGenerateAppBarButton.IsChecked = true;
         }
 
 		/// <summary>
@@ -122,16 +125,31 @@ namespace IntelOrca.RRHMG.Metro
 		/// <param name="e">The <see cref="HexagonEventArgs"/> instance containing the event data.</param>
 		private void HexagonOnTapped(object sender, HexagonEventArgs e)
 		{
-			// Check if the tapped hexagon's children are too deep to see
-			if (e.LevelDepth < XamlHexagonMap.MaxLevelsToShow) {
-				// Generate children for the tapped hexagon
-				if (e.Hexagon.Children == null) {
-					e.Hexagon.GenerateChildren(_random, XamlHexagonMap.HexagonPattern);
-					_numHexagonsGenerated += e.Hexagon.Children.Length;
-					UpdateStatistics();
+			if (XamlGenerateAppBarButton.IsChecked == true) {
+				// Check if the tapped hexagon's children are too deep to see
+				if (e.LevelDepth < XamlHexagonMap.MaxLevelsToShow) {
+					// Generate children for the tapped hexagon
+					if (e.Hexagon.Children == null) {
+						e.Hexagon.GenerateChildren(_random, XamlHexagonMap.HexagonPattern);
+						_numHexagonsGenerated += e.Hexagon.Children.Length;
+						UpdateStatistics();
+					}
 				}
-				e.Handled = true;
+			} else if (XamlZoomInAppBarButton.IsChecked == true) {
+				Hexagon hexagon = e.Hexagon;
+				if (hexagon == XamlHexagonMap.ShowingHexagon)
+					return;
+
+				while (hexagon.Parent != XamlHexagonMap.ShowingHexagon)
+					hexagon = hexagon.Parent;
+
+				XamlHexagonMap.ShowingHexagon = hexagon;
+			} else if (XamlZoomOutAppBarButton.IsChecked == true) {
+				if (XamlHexagonMap.ShowingHexagon.Parent != null)
+					XamlHexagonMap.ShowingHexagon = XamlHexagonMap.ShowingHexagon.Parent;
 			}
+
+			e.Handled = true;
 		}
 
 		/// <summary>
@@ -214,6 +232,72 @@ namespace IntelOrca.RRHMG.Metro
 			foreach (TextBlock textBlock in XamlStatisticsContainer.Children) {
 				textBlock.Text = String.Format("{0}: {1}", statistics[index].Key, statistics[index].Value);
 				index++;
+			}
+		}
+
+		private void GenerateOnChecked(object sender, RoutedEventArgs e)
+		{
+			XamlZoomInAppBarButton.IsChecked = false;
+			XamlZoomOutAppBarButton.IsChecked = false;
+		}
+
+		private void ZoomInOnChecked(object sender, RoutedEventArgs e)
+		{
+			XamlGenerateAppBarButton.IsChecked = false;
+			XamlZoomOutAppBarButton.IsChecked = false;
+		}
+
+		private void ZoomOutOnChecked(object sender, RoutedEventArgs e)
+		{
+			XamlGenerateAppBarButton.IsChecked = false;
+			XamlZoomInAppBarButton.IsChecked = false;
+		}
+
+		private void XamlHexagonMap_PointerMoved(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+		{
+			// Reset the colour for all the hexagon shapes
+			foreach (HexagonShape shape in XamlHexagonMap.Children
+				.OfType<HexagonShape>()
+				.Where(x => !x.Highlighted))
+				shape.DeriveColour();
+
+			// Only highlight hexagons if zooming in
+			if (XamlZoomInAppBarButton.IsChecked != true)
+				return;
+
+			// Get the highligted hexagon
+			HexagonShape highlightedHexagonShape = XamlHexagonMap.Children
+				.OfType<HexagonShape>()
+				.FirstOrDefault(x => x.Highlighted);
+			
+			if (highlightedHexagonShape == null)
+				return;
+
+			// Get the hexagon that will be used for next zoom level
+			Hexagon hexagon = highlightedHexagonShape.Hexagon;
+			if (hexagon == XamlHexagonMap.ShowingHexagon)
+				return;
+
+			while (hexagon.Parent != XamlHexagonMap.ShowingHexagon)
+				hexagon = hexagon.Parent;
+
+			// Get all the descending hexagons
+			Hexagon[] descendants = hexagon.Descendants.ToArray();
+			if (descendants.Length == 0)
+				return;
+
+			IEnumerable<HexagonShape> shapesToHighlight = XamlHexagonMap.Children
+				.OfType<HexagonShape>()
+				.Where(x => descendants.Contains(x.Hexagon));
+
+			// Highlight the shapes
+			foreach (HexagonShape shape in shapesToHighlight) {
+				Color c = shape.Colour;
+
+				c.R = (byte)Math.Min(255, c.R + 128 * 0.2126);
+				c.G = (byte)Math.Min(255, c.G + 128 * 0.7152);
+				c.B = (byte)Math.Min(255, c.B + 128 * 0.0722);
+				shape.Colour = c;
 			}
 		}
 	}

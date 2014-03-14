@@ -18,11 +18,6 @@ namespace IntelOrca.RRHMG.Metro
 		private readonly Polygon _polygon;
 		private Color _colour;
 
-		/// <summary>
-		/// Gets or sets the <see cref="Hexagon"/> this shape is based on.
-		/// </summary>
-		public Hexagon Hexagon { get; set; }
-
 		#region Properties
 
 		public static readonly DependencyProperty SizeProperty = DependencyProperty.Register("Size", typeof(double),
@@ -40,6 +35,34 @@ namespace IntelOrca.RRHMG.Metro
 			set { SetValue(SizeProperty, value); }
 		}
 
+		/// <summary>
+		/// Gets or sets the <see cref="Hexagon"/> this shape is based on.
+		/// </summary>
+		public Hexagon Hexagon { get; set; }
+
+		/// <summary>
+		/// Gets or sets the colour of the hexagon.
+		/// </summary>
+		public Color Colour
+		{
+			get { return _colour; }
+			set
+			{
+				_colour = value;
+				_polygon.Fill = new SolidColorBrush(_colour);
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets whether the hexagon should highlight when the cursor is over it.
+		/// </summary>
+		public bool HighlightOnHover { get; set; }
+
+		/// <summary>
+		/// Gets whether the hexagon is highlighted or not.
+		/// </summary>
+		public bool Highlighted { get; private set; }
+
 		#endregion
 
 		/// <summary>
@@ -50,6 +73,7 @@ namespace IntelOrca.RRHMG.Metro
 			Hexagon = hexagon;
 			Content = _polygon = new Polygon();
 			Size = size;
+			HighlightOnHover = true;
 
 			UpdateContent();
 		}
@@ -68,12 +92,20 @@ namespace IntelOrca.RRHMG.Metro
 				_polygon.Points.Add(new Point(offset.X * hexagonWidth, offset.Y * hexagonHeight));
 
 			// Set the appearance
-			_colour = TerrainRenderer.GetTerrainColour(Hexagon.TerrainInfo);
-			_polygon.Fill = new SolidColorBrush(_colour);
+			DeriveColour();
 
 			// Set the final control size
 			Width = hexagonWidth;
 			Height = hexagonHeight;
+		}
+
+		/// <summary>
+		/// Sets the colour based on the hexagon terrain.
+		/// </summary>
+		public void DeriveColour()
+		{
+			_colour = TerrainRenderer.GetTerrainColour(Hexagon.TerrainInfo);
+			_polygon.Fill = new SolidColorBrush(_colour);
 		}
 
 		/// <summary>
@@ -84,11 +116,15 @@ namespace IntelOrca.RRHMG.Metro
 		{
 			base.OnPointerEntered(e);
 
-			Color c = _colour;
-			c.R = (byte)Math.Min(255, c.R + 128);
-			c.G = (byte)Math.Min(255, c.G + 128);
-			c.B = (byte)Math.Min(255, c.B + 128);
-			_polygon.Fill = new SolidColorBrush(c);
+			if (HighlightOnHover) {
+				Color c = _colour;
+				c.R = (byte)Math.Min(255, c.R + 128);
+				c.G = (byte)Math.Min(255, c.G + 128);
+				c.B = (byte)Math.Min(255, c.B + 128);
+				_polygon.Fill = new SolidColorBrush(c);
+
+				Highlighted = true;
+			}
 		}
 
 		/// <summary>
@@ -99,7 +135,10 @@ namespace IntelOrca.RRHMG.Metro
 		{
 			base.OnPointerExited(e);
 
-			_polygon.Fill = new SolidColorBrush(_colour);
+			if (HighlightOnHover) {
+				_polygon.Fill = new SolidColorBrush(_colour);
+				Highlighted = false;
+			}
 		}
 	}
 }

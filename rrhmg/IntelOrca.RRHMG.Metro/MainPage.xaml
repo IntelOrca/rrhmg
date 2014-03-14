@@ -15,9 +15,21 @@
         </Style>
     </Page.Resources>
 
+    <Page.TopAppBar>
+        <CommandBar IsSticky="True" IsOpen="True">
+            <CommandBar.PrimaryCommands>
+
+            </CommandBar.PrimaryCommands>
+            <CommandBar.SecondaryCommands>
+                <AppBarToggleButton x:Name="XamlGenerateAppBarButton" Label="Generate" Icon="Target" Checked="GenerateOnChecked" />
+                <AppBarToggleButton x:Name="XamlZoomInAppBarButton" Label="Zoom in" Icon="ZoomIn" Checked="ZoomInOnChecked" />
+                <AppBarToggleButton x:Name="XamlZoomOutAppBarButton" Label="Zoom out" Icon="ZoomOut" Checked="ZoomOutOnChecked" />
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+    </Page.TopAppBar>
     <Grid Background="#CCCCCC">
         <Grid>
-            <local:HexagonMap x:Name="XamlHexagonMap" HexagonTapped="HexagonOnTapped" HexagonRightTapped="HexagonOnRightTapped">
+            <local:HexagonMap x:Name="XamlHexagonMap" HexagonTapped="HexagonOnTapped" HexagonRightTapped="HexagonOnRightTapped" PointerMoved="XamlHexagonMap_PointerMoved">
                 <Grid>
                     <TextBlock x:Name="XamlTitleShadowTextBlock" Margin="9,9,0,0" Foreground="Black" FontSize="42" FontFamily="Segoe UI"
                        Text="Recursive random hexagonal map generator" />

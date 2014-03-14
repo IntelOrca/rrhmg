@@ -67,10 +67,10 @@ namespace IntelOrca.RRHMG
 			} else {
 				// Larger chance of smooth
 				if (avg < 0.25) {
-					if (random.Next(0, 8) == 0)
+					if (random.Next(0, 4) == 0)
 						ti.Height = 1.0 - avg;
 				} else {
-					if (random.Next(0, 16) == 0)
+					if (random.Next(0, 8) == 0)
 						ti.Height = 1.0 - avg;
 				}
 			}
