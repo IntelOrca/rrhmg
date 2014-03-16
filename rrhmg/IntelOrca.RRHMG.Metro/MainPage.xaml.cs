@@ -46,8 +46,8 @@ namespace IntelOrca.RRHMG.Metro
 			};
 
 			// Start showing hexagon level
-			XamlHexagonMap.ShowingHexagon = HexagonSaved ?? (HexagonSaved = new Hexagon(new TerrainInfo()));
 			XamlHexagonMap.HexagonPattern = HexagonPattern == null ? HexagonPattern.Patterns.First() : HexagonPattern;
+			XamlHexagonMap.ShowingHexagon = HexagonSaved ?? (HexagonSaved = new Hexagon(new TerrainInfo()));
 
 			// Extra events
 			Window.Current.CoreWindow.KeyDown += OnKeyDown;
@@ -193,6 +193,19 @@ namespace IntelOrca.RRHMG.Metro
 			Frame.Navigate(typeof(PatternSelectionPage));
 		}
 
+		private void ToggleHexagonSizeOnClick(object sender, RoutedEventArgs e)
+		{
+			AppBarButton button = (AppBarButton)sender;
+			if (XamlHexagonMap.InitialHexagonSizeFactor == HexagonMap.LargeHexagonSizeFactor) {
+				XamlHexagonMap.InitialHexagonSizeFactor = HexagonMap.SmallHexagonSizeFactor;
+				button.Label = "Large hexagons";
+			} else {
+				XamlHexagonMap.InitialHexagonSizeFactor = HexagonMap.LargeHexagonSizeFactor;
+				button.Label = "Small hexagons";
+			}
+			RefreshMap();
+		}
+
 		private void DemonstrationButtonOnClick(object sender, RoutedEventArgs e)
 		{
 			var button = (AppBarButton)sender;
@@ -207,15 +220,10 @@ namespace IntelOrca.RRHMG.Metro
 
 		private void RestartButtonOnClick(object sender, RoutedEventArgs e)
 		{
-			var hexagonPatterns = HexagonPattern.Patterns.ToArray();
-			var hexagonPattern = hexagonPatterns[_random.Next(hexagonPatterns.Length)];
-			hexagonPattern = hexagonPatterns[0];
-
 			XamlHexagonMap.ShowingHexagon = HexagonSaved = new Hexagon(new TerrainInfo());
-			XamlHexagonMap.HexagonPattern = hexagonPattern;
 		}
 
-		private void HelpButtonOnClick(object sender, RoutedEventArgs e)
+		private void AboutButtonOnClick(object sender, RoutedEventArgs e)
 		{
 			
 		}

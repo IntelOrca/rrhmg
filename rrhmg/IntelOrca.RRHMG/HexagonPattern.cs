@@ -94,34 +94,78 @@ namespace IntelOrca.RRHMG
 		/// </summary>
 		private static IDictionary<string, HexagonPattern> PaternDictionary = 
 			new [] {
-				new HexagonPattern("8-flower", 1.0 / 3.0, new ChildInfo[] {
+				new HexagonPattern("3", 1.0 / 2.0, new ChildInfo[] {
+					new ChildInfo(new Point(-0.25, -0.5)),
+					new ChildInfo(new Point(+0.50,  0.0)),
+					new ChildInfo(new Point(-0.25, +0.5))
+				}),
+				new HexagonPattern("3+1", 1.0 / 2.0, new ChildInfo[] {
+					new ChildInfo(new Point(-0.25, -0.5)),
+					new ChildInfo(new Point(+0.50,  0.0)),
+					new ChildInfo(new Point(-0.25, +0.5)),
+					new ChildInfo(new Point(+0.50,  1.0), new int[] { 0, 1, 2 })
+				}),
+				new HexagonPattern("6 flower", 1.0 / 3.0, new ChildInfo[] {
 					new ChildInfo(new Point(-0.75, -0.5)),
 					new ChildInfo(new Point(-0.75,  0.5)),
-
 					new ChildInfo(new Point( 0.00, -1.0)),
 					new ChildInfo(new Point( 0.00,  0.0)),
 					new ChildInfo(new Point( 0.00,  1.0)),
-					
+					new ChildInfo(new Point( 0.75, -0.5)),
+					new ChildInfo(new Point( 0.75,  0.5)),
+				}),
+				new HexagonPattern("6+2 flower", 1.0 / 3.0, new ChildInfo[] {
+					new ChildInfo(new Point(-0.75, -0.5)),
+					new ChildInfo(new Point(-0.75,  0.5)),
+					new ChildInfo(new Point( 0.00, -1.0)),
+					new ChildInfo(new Point( 0.00,  0.0)),
+					new ChildInfo(new Point( 0.00,  1.0)),
 					new ChildInfo(new Point( 0.75, -0.5)),
 					new ChildInfo(new Point( 0.75,  0.5)),
 
 					new ChildInfo(new Point( 0.75,  1.5), new int[] { 3, 4, 6 }),
 					new ChildInfo(new Point( 1.50,  0.0), new int[] { 3, 5, 6 })
 				}),
-				new HexagonPattern("ThreeOverOne", 1.0 / 2.0, new ChildInfo[] {
-					new ChildInfo(new Point(-0.25, -0.5)),
-					new ChildInfo(new Point(+0.50,  0.0)),
-					new ChildInfo(new Point(-0.25, +0.5)),
-					new ChildInfo(new Point(+0.50,  1.0), new int[] { 0, 1, 2 })
-				}),
-				new HexagonPattern("6-flower", 1.0 / 3.0, new ChildInfo[] {
+				new HexagonPattern("13", 1.0 / 4.0, new ChildInfo[] {
+					new ChildInfo(new Point(-1.50,  0.0)),
+
+					new ChildInfo(new Point(-0.75, -1.5)),
 					new ChildInfo(new Point(-0.75, -0.5)),
 					new ChildInfo(new Point(-0.75,  0.5)),
+					new ChildInfo(new Point(-0.75,  1.5)),
+
 					new ChildInfo(new Point( 0.00, -1.0)),
-					new ChildInfo(new Point( 0.00,  0.0)),
+					new ChildInfo(new Point( 0.00, -0.0)),
 					new ChildInfo(new Point( 0.00,  1.0)),
+
+					new ChildInfo(new Point( 0.75, -1.5)),
 					new ChildInfo(new Point( 0.75, -0.5)),
 					new ChildInfo(new Point( 0.75,  0.5)),
+					new ChildInfo(new Point( 0.75,  1.5)),
+
+					new ChildInfo(new Point( 1.50,  0.0)),
+				}),
+				new HexagonPattern("13+3", 1.0 / 4.0, new ChildInfo[] {
+					new ChildInfo(new Point(-1.50,  0.0)),
+
+					new ChildInfo(new Point(-0.75, -1.5)),
+					new ChildInfo(new Point(-0.75, -0.5)),
+					new ChildInfo(new Point(-0.75,  0.5)),
+					new ChildInfo(new Point(-0.75,  1.5)),
+
+					new ChildInfo(new Point( 0.00, -1.0)),
+					new ChildInfo(new Point( 0.00, -0.0)),
+					new ChildInfo(new Point( 0.00,  1.0)),
+					new ChildInfo(new Point( 0.00,  2.0)),
+
+					new ChildInfo(new Point( 0.75, -1.5)),
+					new ChildInfo(new Point( 0.75, -0.5)),
+					new ChildInfo(new Point( 0.75,  0.5)),
+					new ChildInfo(new Point( 0.75,  1.5)),
+
+					new ChildInfo(new Point( 1.50, -1.0)),
+					new ChildInfo(new Point( 1.50,  0.0)),
+					new ChildInfo(new Point( 1.50,  1.0)),
 				})
 			}.ToDictionary(x => x.Name);
 

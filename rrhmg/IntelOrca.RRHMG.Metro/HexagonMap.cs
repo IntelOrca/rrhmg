@@ -15,14 +15,17 @@ namespace IntelOrca.RRHMG.Metro
 	/// </summary>
 	public sealed class HexagonMap : Canvas
 	{
-		private const double _initialHexagonSizeFactor = 0.75;
+		public const double SmallHexagonSizeFactor = 3.0 / 16.0;
+		public const double LargeHexagonSizeFactor = 3.0 / 4.0;
+
+		private double _initialHexagonSizeFactor = LargeHexagonSizeFactor;
 
 		private Hexagon _showingHexagon;
 		private HexagonPattern _hexagonPattern;
 		private int _maxLevelsToShow = 5;
 
 		private Point _pan;
-		private double _zoom = 0.5;
+		private double _zoom = 1.0;
 
 		private readonly List<HexagonShape> _availableHexagons = new List<HexagonShape>();
 		private bool _useOptimisedHexagonCreation = false;
@@ -68,6 +71,15 @@ namespace IntelOrca.RRHMG.Metro
 				_maxLevelsToShow = value;
 				GenerateHexagonShapes();
 			}
+		}
+
+		/// <summary>
+		/// Gets or sets the initial size of the hexagon, technically a zoom factor.
+		/// </summary>
+		public double InitialHexagonSizeFactor
+		{
+			get { return _initialHexagonSizeFactor; }
+			set { _initialHexagonSizeFactor = value; }
 		}
 
 		/// <summary>
@@ -225,6 +237,7 @@ namespace IntelOrca.RRHMG.Metro
 
 				hex.Hexagon = hexagon;
 				hex.Size = size;
+				hex.DeriveColour();
 			} else {
 				// Create the hexagon shape associated with this hexagon
 				hex = new HexagonShape(hexagon, size);
@@ -305,8 +318,6 @@ namespace IntelOrca.RRHMG.Metro
 		/// <returns>True if the hexagon is visible, otherwise false.</returns>
 		private bool IsHexagonVisible(double x, double y, double size)
 		{
-			return true;
-
 			// Get the hexagon width and height
 			double hw = Hexagon.GetWidth(size);
 			double hh = Hexagon.GetHeight(size);
@@ -316,7 +327,10 @@ namespace IntelOrca.RRHMG.Metro
 			var canvasBounds = new Rect(0, 0, ActualWidth, ActualHeight);
 
 			// Return true if they intersect, i.e. the given hexagon is visible on the canvas
-			return canvasBounds.IntersectsWith(hexagonBounds);
+			var result = canvasBounds.IntersectsWith(hexagonBounds);
+			if (result == false)
+				result = result;
+			return result;
 		}
 
 		/// <summary>

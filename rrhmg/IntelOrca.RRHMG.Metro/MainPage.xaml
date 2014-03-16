@@ -30,7 +30,7 @@
     <Grid Background="#CCCCCC">
         <Grid>
             <local:HexagonMap x:Name="XamlHexagonMap" HexagonTapped="HexagonOnTapped" HexagonRightTapped="HexagonOnRightTapped" PointerMoved="XamlHexagonMap_PointerMoved" />
-            <StackPanel x:Name="XamlStatisticsContainer" HorizontalAlignment="Right" Margin="0,128,9,9" />
+            <StackPanel x:Name="XamlStatisticsContainer" HorizontalAlignment="Right" Margin="0,128,32,8" />
         </Grid>
     </Grid>
     <Page.BottomAppBar>
@@ -38,10 +38,11 @@
             <CommandBar.PrimaryCommands>
                 <AppBarButton Label="Demonstration" Icon="Play" Click="DemonstrationButtonOnClick" />
                 <AppBarButton Label="Restart" Icon="Rotate" Click="RestartButtonOnClick" />
-                <AppBarButton Label="Help" Icon="Help" Click="HelpButtonOnClick" />
+                <AppBarButton Label="About" Icon="Help" Click="AboutButtonOnClick" />
             </CommandBar.PrimaryCommands>
             <CommandBar.SecondaryCommands>
                 <AppBarButton Label="Select pattern" Icon="ClearSelection" Click="SelectPatternOnClick" />
+                <AppBarButton Label="Small hexagons" Icon="Zoom" Click="ToggleHexagonSizeOnClick" />
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>
