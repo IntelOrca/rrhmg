@@ -96,7 +96,7 @@ namespace IntelOrca.RRHMG
 		public void GenerateChildren(Random random, HexagonPattern pattern)
 		{
 			int numChildHexagonsToGenerate = pattern.ChildrenInfo.Count;
-			int centralHexagonIndex = numChildHexagonsToGenerate / 2;
+			int centralHexagonIndex = numChildHexagonsToGenerate / 2 - 1;
 
 			var children = new Hexagon[numChildHexagonsToGenerate];
 

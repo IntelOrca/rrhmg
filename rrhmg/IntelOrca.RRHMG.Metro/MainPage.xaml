@@ -18,7 +18,7 @@
     <Page.TopAppBar>
         <CommandBar IsSticky="True" IsOpen="True">
             <CommandBar.PrimaryCommands>
-
+                <AppBarButton x:Name="XamlProcessAppBarButton" Label="Idle" Icon="More" />
             </CommandBar.PrimaryCommands>
             <CommandBar.SecondaryCommands>
                 <AppBarToggleButton x:Name="XamlGenerateAppBarButton" Label="Generate" Icon="Target" Checked="GenerateOnChecked" />
@@ -29,23 +29,16 @@
     </Page.TopAppBar>
     <Grid Background="#CCCCCC">
         <Grid>
-            <local:HexagonMap x:Name="XamlHexagonMap" HexagonTapped="HexagonOnTapped" HexagonRightTapped="HexagonOnRightTapped" PointerMoved="XamlHexagonMap_PointerMoved">
-                <Grid>
-                    <TextBlock x:Name="XamlTitleShadowTextBlock" Margin="9,9,0,0" Foreground="Black" FontSize="42" FontFamily="Segoe UI"
-                       Text="Recursive random hexagonal map generator" />
-                    <TextBlock x:Name="XamlTitleTextBlock" Margin="8,8,0,0" Foreground="White" FontSize="42" FontFamily="Segoe UI"
-                       Text="Recursive random hexagonal map generator" />
-                </Grid>
-            </local:HexagonMap>
-            <StackPanel x:Name="XamlStatisticsContainer" HorizontalAlignment="Right" Margin="0,64,9,9" />
+            <local:HexagonMap x:Name="XamlHexagonMap" HexagonTapped="HexagonOnTapped" HexagonRightTapped="HexagonOnRightTapped" PointerMoved="XamlHexagonMap_PointerMoved" />
+            <StackPanel x:Name="XamlStatisticsContainer" HorizontalAlignment="Right" Margin="0,128,9,9" />
         </Grid>
     </Grid>
     <Page.BottomAppBar>
-        <CommandBar>
+        <CommandBar IsSticky="True" IsOpen="True">
             <CommandBar.PrimaryCommands>
                 <AppBarButton Label="Demonstration" Icon="Play" Click="DemonstrationButtonOnClick" />
                 <AppBarButton Label="Restart" Icon="Rotate" Click="RestartButtonOnClick" />
-                <AppBarButton Label="Help" Icon="Help" />
+                <AppBarButton Label="Help" Icon="Help" Click="HelpButtonOnClick" />
             </CommandBar.PrimaryCommands>
             <CommandBar.SecondaryCommands>
                 <AppBarButton Label="Select pattern" Icon="ClearSelection" Click="SelectPatternOnClick" />

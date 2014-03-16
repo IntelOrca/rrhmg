@@ -104,8 +104,11 @@ namespace IntelOrca.RRHMG.Metro
 		/// </summary>
 		public void DeriveColour()
 		{
-			_colour = TerrainRenderer.GetTerrainColour(Hexagon.TerrainInfo);
-			_polygon.Fill = new SolidColorBrush(_colour);
+			Color newColour = TerrainRenderer.GetTerrainColour(Hexagon.TerrainInfo);
+			if (newColour != _colour) {
+				_colour = newColour;
+				_polygon.Fill = new SolidColorBrush(_colour);
+			}
 		}
 
 		/// <summary>

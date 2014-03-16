@@ -66,15 +66,19 @@ namespace IntelOrca.RRHMG
 					ti.Height += random.NextDoubleSigned() * 2.0;
 			} else {
 				// Larger chance of smooth
-				if (avg < 0.25) {
-					if (random.Next(0, 4) == 0)
-						ti.Height = 1.0 - avg;
-				} else {
-					if (random.Next(0, 8) == 0)
-						ti.Height = 1.0 - avg;
-				}
+				if (random.Next(0, 5) == 0) {
+					if (avg < 0.25) {
+						if (random.Next(0, 4) == 0)
+							ti.Height = 1.0 - avg;
+					} else {
+						if (random.Next(0, 8) == 0)
+							ti.Height = 1.0 - avg;
+					}
+				} else
+					ti.Height = MathX.Lerp(hexagon.TerrainInfo.Height, avg, random.NextDouble() * 0.1);
 			}
 
+			// Fix height between 0 and 1
 			ti.Height = MathX.Clamp(ti.Height, 0.0, 1.0);
 
 			return ti;

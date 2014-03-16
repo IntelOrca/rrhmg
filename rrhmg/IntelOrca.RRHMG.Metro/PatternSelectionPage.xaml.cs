@@ -64,7 +64,10 @@ namespace IntelOrca.RRHMG.Metro
 				Background = new SolidColorBrush(Color.FromArgb(255, 96, 96, 96))
 			};
 			sp.Tapped += (s, e) => {
-				MainPage.HexagonPattern = pattern;
+				if (MainPage.HexagonPattern != pattern) {
+					MainPage.HexagonPattern = pattern;
+					MainPage.HexagonSaved = null;
+				}
 				_navigationHelper.GoBack();
 			};
 

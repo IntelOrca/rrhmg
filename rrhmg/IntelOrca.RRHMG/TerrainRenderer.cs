@@ -16,7 +16,7 @@ namespace IntelOrca.RRHMG
 			new KeyValuePair<double, Color>(0.4, Color.FromArgb(255, 128, 128, 0)),
 			new KeyValuePair<double, Color>(0.5, Color.FromArgb(255, 0, 64, 0)),
 			new KeyValuePair<double, Color>(0.8, Color.FromArgb(255, 0, 255, 0)),
-			new KeyValuePair<double, Color>(0.9, Color.FromArgb(255, 64, 64, 64)),
+			new KeyValuePair<double, Color>(0.9, Color.FromArgb(255, 192, 240, 192)),
 			new KeyValuePair<double, Color>(1.0, Color.FromArgb(255, 255, 255, 255))
 		};
 

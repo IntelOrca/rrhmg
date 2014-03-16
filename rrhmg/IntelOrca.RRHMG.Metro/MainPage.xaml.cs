@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI;
 using Windows.UI.Core;
@@ -14,19 +15,25 @@ namespace IntelOrca.RRHMG.Metro
     /// </summary>
     internal sealed partial class MainPage : Page
     {
+		public static HexagonPattern HexagonPattern { get; set; }
+		public static Hexagon HexagonSaved { get; set; }
+
+		private static MainPage _mainInstance { get; set; }
+
 		private readonly Random _random = new Random(0);
 		private readonly DispatcherTimer _demonstrationTimer = new DispatcherTimer();
 
 		private readonly MediaElement _mediaElement = new MediaElement();
 
-		public static HexagonPattern HexagonPattern { get; set; }
+		private int _numHexagonsGenerated;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MainPage"/> class.
 		/// </summary>
         public MainPage()
         {
-            this.InitializeComponent();
+			_mainInstance = this;
+            InitializeComponent();
 
 			_demonstrationTimer.Interval = TimeSpan.FromMilliseconds(100);
 			_demonstrationTimer.Tick += async (s, e) => {
@@ -34,12 +41,12 @@ namespace IntelOrca.RRHMG.Metro
 				_mediaElement.Play();
 				
 				NextDemonstrationAction();
-				XamlHexagonMap.GenerateHexagonShapes();
+				RefreshMap();
 				UpdateStatistics();
 			};
 
 			// Start showing hexagon level
-			XamlHexagonMap.ShowingHexagon = new Hexagon(new TerrainInfo());
+			XamlHexagonMap.ShowingHexagon = HexagonSaved ?? (HexagonSaved = new Hexagon(new TerrainInfo()));
 			XamlHexagonMap.HexagonPattern = HexagonPattern == null ? HexagonPattern.Patterns.First() : HexagonPattern;
 
 			// Extra events
@@ -112,96 +119,11 @@ namespace IntelOrca.RRHMG.Metro
 
 			// Only bother regenerating if hexagons have been added
 			if (numChildrenGenerated > 0)
-				XamlHexagonMap.GenerateHexagonShapes();
+				RefreshMap();
 
 			_numHexagonsGenerated += numChildrenGenerated;
 			UpdateStatistics();
 		}
-
-		/// <summary>
-		/// Event handler for when a hexagon is tapped.
-		/// </summary>
-		/// <param name="sender">The sender.</param>
-		/// <param name="e">The <see cref="HexagonEventArgs"/> instance containing the event data.</param>
-		private void HexagonOnTapped(object sender, HexagonEventArgs e)
-		{
-			if (XamlGenerateAppBarButton.IsChecked == true) {
-				// Check if the tapped hexagon's children are too deep to see
-				if (e.LevelDepth < XamlHexagonMap.MaxLevelsToShow) {
-					// Generate children for the tapped hexagon
-					if (e.Hexagon.Children == null) {
-						e.Hexagon.GenerateChildren(_random, XamlHexagonMap.HexagonPattern);
-						_numHexagonsGenerated += e.Hexagon.Children.Length;
-						UpdateStatistics();
-					}
-				}
-			} else if (XamlZoomInAppBarButton.IsChecked == true) {
-				Hexagon hexagon = e.Hexagon;
-				if (hexagon == XamlHexagonMap.ShowingHexagon)
-					return;
-
-				while (hexagon.Parent != XamlHexagonMap.ShowingHexagon)
-					hexagon = hexagon.Parent;
-
-				XamlHexagonMap.ShowingHexagon = hexagon;
-			} else if (XamlZoomOutAppBarButton.IsChecked == true) {
-				if (XamlHexagonMap.ShowingHexagon.Parent != null)
-					XamlHexagonMap.ShowingHexagon = XamlHexagonMap.ShowingHexagon.Parent;
-			}
-
-			e.Handled = true;
-		}
-
-		/// <summary>
-		/// Event handler for when a hexagon is tapped with the right button.
-		/// </summary>
-		/// <param name="sender">The sender.</param>
-		/// <param name="e">The <see cref="HexagonEventArgs"/> instance containing the event data.</param>
-		private void HexagonOnRightTapped(object sender, HexagonEventArgs e)
-		{
-		}
-
-		/// <summary>
-		/// Called before the KeyDown event occurs.
-		/// </summary>
-		/// <param name="sender">The sender.</param>
-		/// <param name="e">The data for the event.</param>
-		private void OnKeyDown(object sender, KeyEventArgs e)
-		{
-			if (e.VirtualKey == VirtualKey.H)
-				RecurseNextHexagonLevel();
-		}
-
-		private void DemonstrationButtonOnClick(object sender, RoutedEventArgs e)
-		{
-			var button = (AppBarButton)sender;
-			if (!_demonstrationTimer.IsEnabled) {
-				_demonstrationTimer.Start();
-				button.Icon = new SymbolIcon(Symbol.Stop);
-			} else {
-				_demonstrationTimer.Stop();
-				button.Icon = new SymbolIcon(Symbol.Play);
-			}
-		}
-
-		private void RestartButtonOnClick(object sender, RoutedEventArgs e)
-		{
-			var hexagonPatterns = HexagonPattern.Patterns.ToArray();
-			var hexagonPattern = hexagonPatterns[_random.Next(hexagonPatterns.Length)];
-			hexagonPattern = hexagonPatterns[0];
-
-			XamlHexagonMap.ShowingHexagon = new Hexagon(new TerrainInfo());
-			XamlHexagonMap.HexagonPattern = hexagonPattern;
-
-			BottomAppBar.IsOpen = false;
-		}
-
-		private void SelectPatternOnClick(object sender, RoutedEventArgs e)
-		{
-			Frame.Navigate(typeof(PatternSelectionPage), this);
-		}
-
-		private int _numHexagonsGenerated;
 
 		private void UpdateStatistics()
 		{
@@ -235,6 +157,19 @@ namespace IntelOrca.RRHMG.Metro
 			}
 		}
 
+		private async void RefreshMap()
+		{
+			XamlProcessAppBarButton.Label = "Rendering";
+			XamlProcessAppBarButton.Icon = new SymbolIcon(Symbol.Setting);
+			await Dispatcher.RunIdleAsync(e => {
+				XamlHexagonMap.GenerateHexagonShapes();
+				XamlProcessAppBarButton.Label = "Idle";
+				XamlProcessAppBarButton.Icon = new SymbolIcon(Symbol.More);
+			});
+		}
+
+		#region Appbar Events
+
 		private void GenerateOnChecked(object sender, RoutedEventArgs e)
 		{
 			XamlZoomInAppBarButton.IsChecked = false;
@@ -253,12 +188,50 @@ namespace IntelOrca.RRHMG.Metro
 			XamlZoomInAppBarButton.IsChecked = false;
 		}
 
+		private void SelectPatternOnClick(object sender, RoutedEventArgs e)
+		{
+			Frame.Navigate(typeof(PatternSelectionPage));
+		}
+
+		private void DemonstrationButtonOnClick(object sender, RoutedEventArgs e)
+		{
+			var button = (AppBarButton)sender;
+			if (!_demonstrationTimer.IsEnabled) {
+				_demonstrationTimer.Start();
+				button.Icon = new SymbolIcon(Symbol.Stop);
+			} else {
+				_demonstrationTimer.Stop();
+				button.Icon = new SymbolIcon(Symbol.Play);
+			}
+		}
+
+		private void RestartButtonOnClick(object sender, RoutedEventArgs e)
+		{
+			var hexagonPatterns = HexagonPattern.Patterns.ToArray();
+			var hexagonPattern = hexagonPatterns[_random.Next(hexagonPatterns.Length)];
+			hexagonPattern = hexagonPatterns[0];
+
+			XamlHexagonMap.ShowingHexagon = HexagonSaved = new Hexagon(new TerrainInfo());
+			XamlHexagonMap.HexagonPattern = hexagonPattern;
+		}
+
+		private void HelpButtonOnClick(object sender, RoutedEventArgs e)
+		{
+			
+		}
+
+		#endregion
+
+		#region Map events
+
 		private void XamlHexagonMap_PointerMoved(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
 		{
 			// Reset the colour for all the hexagon shapes
-			foreach (HexagonShape shape in XamlHexagonMap.Children
+			var shapes = XamlHexagonMap.Children
 				.OfType<HexagonShape>()
-				.Where(x => !x.Highlighted))
+				.Where(x => !x.Highlighted)
+				.ToArray();
+			foreach (HexagonShape shape in shapes)
 				shape.DeriveColour();
 
 			// Only highlight hexagons if zooming in
@@ -269,7 +242,7 @@ namespace IntelOrca.RRHMG.Metro
 			HexagonShape highlightedHexagonShape = XamlHexagonMap.Children
 				.OfType<HexagonShape>()
 				.FirstOrDefault(x => x.Highlighted);
-			
+
 			if (highlightedHexagonShape == null)
 				return;
 
@@ -300,5 +273,63 @@ namespace IntelOrca.RRHMG.Metro
 				shape.Colour = c;
 			}
 		}
+
+		/// <summary>
+		/// Event handler for when a hexagon is tapped.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="e">The <see cref="HexagonEventArgs"/> instance containing the event data.</param>
+		private void HexagonOnTapped(object sender, HexagonEventArgs e)
+		{
+			if (XamlGenerateAppBarButton.IsChecked == true) {
+				// Check if the tapped hexagon's children are too deep to see
+				if (e.LevelDepth < XamlHexagonMap.MaxLevelsToShow) {
+					// Generate children for the tapped hexagon
+					if (e.Hexagon.Children == null) {
+						e.Hexagon.GenerateChildren(_random, XamlHexagonMap.HexagonPattern);
+						_numHexagonsGenerated += e.Hexagon.Children.Length;
+						RefreshMap();
+						UpdateStatistics();
+					}
+				}
+			} else if (XamlZoomInAppBarButton.IsChecked == true) {
+				Hexagon hexagon = e.Hexagon;
+				if (hexagon == XamlHexagonMap.ShowingHexagon)
+					return;
+
+				while (hexagon.Parent != XamlHexagonMap.ShowingHexagon)
+					hexagon = hexagon.Parent;
+
+				XamlHexagonMap.ShowingHexagon = HexagonSaved = hexagon;
+			} else if (XamlZoomOutAppBarButton.IsChecked == true) {
+				if (XamlHexagonMap.ShowingHexagon.Parent != null)
+					XamlHexagonMap.ShowingHexagon = HexagonSaved = XamlHexagonMap.ShowingHexagon.Parent;
+			}
+
+			e.Handled = true;
+		}
+
+		/// <summary>
+		/// Event handler for when a hexagon is tapped with the right button.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="e">The <see cref="HexagonEventArgs"/> instance containing the event data.</param>
+		private void HexagonOnRightTapped(object sender, HexagonEventArgs e) { }
+
+		/// <summary>
+		/// Called before the KeyDown event occurs.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="e">The data for the event.</param>
+		private void OnKeyDown(object sender, KeyEventArgs e)
+		{
+			if (_mainInstance != this)
+				return;
+
+			if (e.VirtualKey == VirtualKey.H)
+				RecurseNextHexagonLevel();
+		}
+
+		#endregion
 	}
 }

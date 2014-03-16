@@ -280,14 +280,6 @@ namespace IntelOrca.RRHMG.Metro
 			// Invoke event handler
 			if (HexagonTapped != null)
 				HexagonTapped.Invoke(this, hexagonEventArgs);
-
-			// Zoom in by one level by default
-			if (!hexagonEventArgs.Handled)
-				_showingHexagon = nextLevelHexagon;
-
-			// Redisplay
-			GenerateHexagonShapes();
-			e.Handled = true;
 		}
 
 		/// <summary>
@@ -302,12 +294,6 @@ namespace IntelOrca.RRHMG.Metro
 
 			// Invoke event handler
 			HexagonRightTapped.Invoke(this, hexagonEventArgs);
-
-			// If there is a parent, zoom out to the parent level
-			if (!hexagonEventArgs.Handled && _showingHexagon.Parent != null) {
-				_showingHexagon = _showingHexagon.Parent;
-				GenerateHexagonShapes();
-			}
 		}
 
 		/// <summary>
