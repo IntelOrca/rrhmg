@@ -24,12 +24,14 @@
                 <AppBarToggleButton x:Name="XamlGenerateAppBarButton" Label="Generate" Icon="Target" Checked="GenerateOnChecked" />
                 <AppBarToggleButton x:Name="XamlZoomInAppBarButton" Label="Zoom in" Icon="ZoomIn" Checked="ZoomInOnChecked" />
                 <AppBarToggleButton x:Name="XamlZoomOutAppBarButton" Label="Zoom out" Icon="ZoomOut" Checked="ZoomOutOnChecked" />
+                <AppBarSeparator />
+                <AppBarButton x:Name="XamlRecurseManyAppBarButton" Label="Recurse many" Icon="World" Click="RecurseManyButtonOnClick" />
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.TopAppBar>
     <Grid Background="#CCCCCC">
         <Grid>
-            <local:HexagonMap x:Name="XamlHexagonMap" HexagonTapped="HexagonOnTapped" HexagonRightTapped="HexagonOnRightTapped" PointerMoved="XamlHexagonMap_PointerMoved" />
+            <local:HexagonMap x:Name="XamlHexagonMap" HexagonTapped="HexagonOnTapped" HexagonRightTapped="HexagonOnRightTapped" PointerMoved="XamlHexagonMapOnPointerMoved" />
             <StackPanel x:Name="XamlStatisticsContainer" HorizontalAlignment="Right" Margin="0,128,32,8" />
         </Grid>
     </Grid>

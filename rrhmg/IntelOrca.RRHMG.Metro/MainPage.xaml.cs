@@ -188,6 +188,11 @@ namespace IntelOrca.RRHMG.Metro
 			XamlZoomInAppBarButton.IsChecked = false;
 		}
 
+		private void RecurseManyButtonOnClick(object sender, RoutedEventArgs e)
+		{
+			RecurseNextHexagonLevel();
+		}
+
 		private void SelectPatternOnClick(object sender, RoutedEventArgs e)
 		{
 			Frame.Navigate(typeof(PatternSelectionPage));
@@ -225,14 +230,14 @@ namespace IntelOrca.RRHMG.Metro
 
 		private void AboutButtonOnClick(object sender, RoutedEventArgs e)
 		{
-			
+			Frame.Navigate(typeof(AboutPage));
 		}
 
 		#endregion
 
 		#region Map events
 
-		private void XamlHexagonMap_PointerMoved(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+		private void XamlHexagonMapOnPointerMoved(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
 		{
 			// Reset the colour for all the hexagon shapes
 			var shapes = XamlHexagonMap.Children
